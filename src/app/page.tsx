@@ -90,6 +90,10 @@ export default function Home() {
             <p className="panel-intro">Explore the area and narrow your search. Facility details will appear here as they are verified.</p>
           </div>
 
+          {selectedHospital && (
+            <HospitalDetailPanel hospital={selectedHospital} onClose={() => setSelectedHospital(null)} />
+          )}
+
           <section className="emergency-card" aria-labelledby="emergency-heading">
             <div className="emergency-heading"><span className="emergency-symbol" aria-hidden="true">!</span><div><p className="eyebrow">NEED HELP NOW?</p><h2 id="emergency-heading">Call emergency services</h2></div></div>
             <div className="call-actions">
@@ -108,9 +112,7 @@ export default function Home() {
             </div>
           </section>
 
-          {selectedHospital ? (
-            <HospitalDetailPanel hospital={selectedHospital} onClose={() => setSelectedHospital(null)} />
-          ) : (
+          {!selectedHospital && (
             <section className="results-empty" aria-live="polite">
               <div className="empty-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 42s14-12.5 14-24a14 14 0 1 0-28 0c0 11.5 14 24 14 24Z" /><circle cx="24" cy="18" r="4.5" /><path d="M18 31h12" /></svg></div>
               <h2>No ERMap-verified facilities yet</h2>

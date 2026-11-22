@@ -69,7 +69,7 @@ button { font: inherit; }
 .icon-stroke { color: #7b73ac; background: #f2f0fa; }
 .icon-child { color: #b17c42; background: #fbf5ec; }
 .icon-maternity { color: #ab6c88; background: #faf0f5; }
-.icon-neurosurgery { color: #5f79a5; background: #eef2f9; }
+.icon-orthopaedic { color: #5f79a5; background: #eef2f9; }
 .icon-fall-injury { color: #aa7642; background: #fbf3e9; }
 .filter-disclaimer { margin: -5px 0 10px; color: #87928b; font-size: 9px; line-height: 1.45; }
 .map-frame { position: relative; flex: 1; min-height: 480px; overflow: hidden; border: 1px solid #dce4de; border-radius: 17px; background: #e8ede7; box-shadow: 0 5px 16px #19382a0a; }
@@ -120,9 +120,23 @@ button { font: inherit; }
 .hospital-detail { margin-top: 17px; padding: 15px; border: 1px solid #e0e8e1; border-radius: 13px; background: #fff; box-shadow: 0 4px 14px #1f46320a; }
 .detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .detail-title-wrap { min-width: 0; }
-.detail-title-wrap h2 { margin: 6px 0 4px; color: #1b3026; font-size: 17px; line-height: 1.2; letter-spacing: -.35px; }
-.provider-caveat { margin: 0; color: #8a7364; font-size: 9px; line-height: 1.5; }
+.detail-provider-label { margin: 0; color: #668477; font-size: 8px; font-weight: 800; letter-spacing: 1px; }
+.detail-title-wrap h2 { margin: 6px 0 3px; color: #1b3026; font-size: 19px; line-height: 1.2; letter-spacing: -.4px; }
+.map-provider-name { margin: 3px 0; color: #87928b; font-size: 8px; }
+.hospital-locality { margin: 0; color: #77857c; font-size: 10px; }
 .detail-close { width: 26px; height: 26px; flex: 0 0 26px; border: 1px solid #e7ece7; border-radius: 8px; background: #fbfcfb; color: #66746c; font-size: 19px; line-height: 1; cursor: pointer; }
+.ownership-badge { width: fit-content; max-width: 100%; min-height: 31px; display: inline-flex; align-items: center; margin-top: 9px; padding: 0 11px; border: 1px solid transparent; border-radius: 8px; }
+.ownership-badge > strong { overflow-wrap: anywhere; font-size: 10px; line-height: 1.2; letter-spacing: .55px; }
+.ownership-government { border-color: #d5e4f4; background: #edf4fb; color: #315f8c; }
+.ownership-private { border-color: #cde8dc; background: #eaf6f0; color: #246a4e; }
+.ownership-trust_charitable { border-color: #e3d8f2; background: #f3eef9; color: #674a8c; }
+.detail-source { display: block; color: #89948d; font-size: 7px; line-height: 1.4; }
+.detail-source a { color: #4e7964; text-decoration: underline; text-underline-offset: 2px; }
+.official-address, .official-website { margin: 9px 1px 0; color: #64736a; font-size: 9px; line-height: 1.5; }
+.official-address .detail-source, .official-website .detail-source { margin-top: 2px; }
+.official-website a { color: #287558; font-weight: 700; text-decoration: none; }
+.official-website a:hover { text-decoration: underline; }
+.last-verified { margin: 6px 1px 0; color: #748178; font-size: 8px; font-weight: 700; }
 .provider-location { display: flex; align-items: center; gap: 9px; margin-top: 13px; padding: 10px; border-radius: 9px; background: #f1f6f1; }
 .provider-location-icon { width: 27px; height: 27px; flex: 0 0 27px; display: grid; place-items: center; border-radius: 8px; background: white; color: #408266; font-size: 18px; }
 .provider-location-copy { min-width: 0; display: flex; flex: 1; flex-direction: column; gap: 3px; }
@@ -130,16 +144,34 @@ button { font: inherit; }
 .provider-location-copy span { overflow-wrap: anywhere; color: #7c8a80; font-size: 8px; }
 .directions-action { flex: 0 0 auto; padding: 7px 8px; border: 1px solid #dce9df; border-radius: 7px; background: white; color: #287558; font-size: 9px; font-weight: 700; text-decoration: none; }
 .directions-action span { padding-left: 2px; }
-.verification-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 16px; }
-.verification-heading h3 { margin: 4px 0 0; color: #263a30; font-size: 12px; }
-.verification-heading > span { padding: 5px 7px; border: 1px solid #f0e2c4; border-radius: 6px; background: #fff9ed; color: #94723d; font-size: 7px; font-weight: 800; letter-spacing: .7px; }
-.verification-list { margin: 9px 0 0; border-top: 1px solid #edf0ed; }
-.verification-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px solid #edf0ed; }
-.verification-row dt { display: flex; flex-direction: column; gap: 3px; color: #617068; font-size: 9px; }
-.verification-row dt small { color: #9aa39d; font-size: 7px; }
-.verification-row dd { display: flex; flex: 0 0 auto; align-items: center; gap: 5px; margin: 0; color: #8b7146; font-size: 8px; font-weight: 600; }
-.needs-confirmation-dot { width: 5px; height: 5px; border-radius: 50%; background: #c69d52; }
-.provider-disclaimer { margin: 10px 0 0; color: #829087; font-size: 8px; line-height: 1.55; }
+.detail-section { margin-top: 15px; padding-top: 13px; border-top: 1px solid #edf0ed; }
+.detail-section-heading { display: flex; align-items: center; gap: 8px; }
+.detail-section-icon { width: 27px; height: 27px; flex: 0 0 27px; display: grid; place-items: center; border-radius: 8px; background: #f0f5f1; color: #4a8468; font-size: 14px; font-weight: 700; }
+.emergency-section-icon { background: #fbefef; color: #bd4d57; }
+.phone-section-icon { background: #eef4fa; color: #57799b; }
+.beds-section-icon { background: #f4f1fa; color: #756393; }
+.detail-section-heading .eyebrow { font-size: 7px; letter-spacing: .9px; }
+.detail-section-heading h3 { margin: 3px 0 0; color: #263a30; font-size: 11px; }
+.section-empty { margin: 9px 0 0; padding: 9px 10px; border-radius: 8px; background: #f7f9f6; color: #748178; font-size: 9px; line-height: 1.45; }
+.emergency-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 9px; }
+.emergency-fact { min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 8px; border: 1px solid #edf1ed; border-radius: 8px; background: #fcfdfb; }
+.emergency-fact > span { color: #58675e; font-size: 8px; }
+.emergency-fact > strong { font-size: 9px; }
+.emergency-fact .fact-yes { color: #27714f; }
+.emergency-fact .fact-no { color: #66736b; }
+.emergency-fact .fact-confirm { color: #7b867f; font-size: 8px; font-weight: 600; }
+.phone-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 9px; padding: 9px 10px; border-radius: 8px; background: #f7f9f6; }
+.phone-row > div { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
+.phone-row .phone-label { color: #58675e; font-size: 9px; }
+.hospital-phone-number { color: #275d46; font-size: 13px; font-weight: 700; text-decoration: none; }
+.call-hospital-action { flex: 0 0 auto; padding: 8px 10px; border-radius: 7px; background: #087b64; color: #fff; font-size: 9px; font-weight: 700; text-decoration: none; }
+.call-hospital-action:hover { background: #066b57; }
+.bed-count { display: flex; align-items: baseline; gap: 7px; margin-top: 9px; padding: 9px 10px; border-radius: 8px; background: #f7f9f6; }
+.bed-count > strong { color: #2b5941; font-size: 24px; }
+.bed-count > span { color: #59685f; font-size: 10px; font-weight: 600; }
+.bed-count .detail-source { width: 100%; padding-left: 1px; }
+.bed-separation-note { margin: 6px 1px 0; color: #8a958d; font-size: 8px; }
+.provider-disclaimer { margin: 13px 0 0; padding-top: 10px; border-top: 1px solid #edf0ed; color: #6c7b71; font-size: 8px; line-height: 1.5; }
 .empty-icon { width: 39px; height: 39px; display: grid; place-items: center; border: 1px solid #e3ebe4; border-radius: 12px; background: #f2f7f2; }
 .empty-icon svg { width: 22px; fill: none; stroke: #72947f; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .results-empty h2 { margin: 10px 0 5px; font-size: 12px; }
@@ -217,10 +249,18 @@ button { font: inherit; }
   .ownership-options button { min-height: 26px; padding: 0 8px; font-size: 8px; }
   .results-empty { min-height: 0; flex: 0 0 auto; display: grid; grid-template-columns: 32px 1fr; align-items: center; column-gap: 9px; margin-top: 11px; padding: 9px; text-align: left; }
   .hospital-detail { margin-top: 11px; padding: 11px; }
-  .detail-title-wrap h2 { font-size: 15px; }
+  .detail-title-wrap h2 { font-size: 17px; }
+  .ownership-badge { min-height: 29px; padding: 0 9px; }
+  .ownership-badge > strong { font-size: 9px; }
+  .detail-section { margin-top: 12px; padding-top: 10px; }
+  .emergency-facts { gap: 5px; }
+  .emergency-fact { padding: 7px; }
+  .phone-row { flex-wrap: wrap; }
+  .phone-row > div { flex: 1 1 130px; }
+  .phone-row .call-hospital-action { flex: 1 1 100%; text-align: center; }
+  .bed-count { flex-wrap: wrap; }
   .provider-location { gap: 7px; padding: 8px; }
   .directions-action { padding: 6px; }
-  .verification-row { padding: 7px 0; }
   .empty-icon { width: 32px; height: 32px; grid-row: 1 / 3; border-radius: 9px; }
   .empty-icon svg { width: 19px; }
   .results-empty h2 { margin: 0 0 3px; font-size: 9px; }

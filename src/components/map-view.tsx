@@ -4,11 +4,14 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { type Map as MapLibreMap } from "maplibre-gl";
 import type { SearchLocation } from "@/components/location-search";
+import { findHospitalEnrichment, type HospitalEnrichment } from "@/lib/hospital-directory";
 
 export type MapHospital = {
   name: string;
+  locality?: string;
   longitude: number;
   latitude: number;
+  enrichment?: HospitalEnrichment;
 };
 
 type MapViewProps = {
@@ -86,11 +89,16 @@ export default function MapView({ onHospitalSelect, searchLocation }: MapViewPro
       const coordinates = feature.geometry.type === "Point"
         ? feature.geometry.coordinates
         : [event.lngLat.lng, event.lngLat.lat];
+      const mapCoordinates: [number, number] = [coordinates[0], coordinates[1]];
 
       onHospitalSelectRef.current({
         name,
-        longitude: coordinates[0],
-        latitude: coordinates[1]
+        locality: ["suburb", "neighbourhood", "neighborhood", "city_district", "district", "city"]
+          .map((key) => properties[key])
+          .find((value): value is string => typeof value === "string" && value.trim().length > 0),
+        longitude: mapCoordinates[0],
+        latitude: mapCoordinates[1],
+        enrichment: findHospitalEnrichment(name, mapCoordinates)
       });
     });
     map.on("mousemove", (event) => {

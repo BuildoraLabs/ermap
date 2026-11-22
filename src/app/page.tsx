@@ -9,8 +9,8 @@ const conditions = [
   { name: "Trauma", icon: "+" },
   { name: "Cardiac", icon: "♡" },
   { name: "Stroke", icon: "⌁" },
-  { name: "Neurosurgery", icon: "◉" },
-  { name: "Fall / Injury", icon: "↘", help: "Includes a fall at home" },
+  { name: "Orthopaedic", icon: "⌖", help: "Emergency assessment of fractures, suspected fractures, bone, joint and musculoskeletal injuries" },
+  { name: "Fall / Injury", icon: "↘", help: "Includes falls at home" },
   { name: "Child", icon: "⌣" },
   { name: "Maternity", icon: "✳" }
 ];
@@ -74,7 +74,7 @@ export default function Home() {
               </button>
             ))}
           </div>
-          <p className="filter-disclaimer">Choose care needs to filter verified listings when available. Filters do not confirm a facility offers a service. Fall / Injury includes falls at home.</p>
+          <p className="filter-disclaimer">Filters help identify the type of emergency care needed; they do not confirm facility capabilities. Orthopaedic includes fractures, suspected fractures, bone, joint and musculoskeletal injuries. Fall / Injury includes falls at home.</p>
 
           <div className="map-frame">
             <MapView onHospitalSelect={handleHospitalSelect} searchLocation={searchLocation} />
@@ -119,7 +119,7 @@ export default function Home() {
             </section>
           )}
 
-          <div className="trust-note" id="trust-note"><span aria-hidden="true">✳</span><p><strong>Information, not medical advice.</strong><br />Details can change. Call a facility before travelling.</p></div>
+          {!selectedHospital && <div className="trust-note" id="trust-note"><span aria-hidden="true">✳</span><p><strong>Information, not medical advice.</strong><br />Details can change. Call a facility before travelling.</p></div>}
         </aside>
       </section>
 

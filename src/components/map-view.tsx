@@ -4,19 +4,24 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { type Map as MapLibreMap } from "maplibre-gl";
 import type { SearchLocation } from "@/components/location-search";
-import { findHospitalEnrichment, type HospitalEnrichment } from "@/lib/hospital-directory";
+import { confirmedERFacilities, findConfirmedERFacility, type HospitalEnrichment } from "@/lib/hospital-directory";
 
 export type MapHospital = {
   name: string;
   locality?: string;
   longitude: number;
   latitude: number;
+  erConfirmed: boolean;
+  facilityId?: string;
   enrichment?: HospitalEnrichment;
 };
 
 type MapViewProps = {
   onHospitalSelect: (hospital: MapHospital) => void;
   searchLocation: SearchLocation | null;
+  selectedFacilityId: string | null;
+  fitAllRequest: number;
+  userLocation: { longitude: number; latitude: number } | null;
 };
 
 const styleUrl = process.env.NEXT_PUBLIC_MAP_STYLE_URL;
@@ -36,11 +41,23 @@ function isHospitalPoi(properties: Record<string, unknown>, layerId: string) {
   return searchable.includes("hospital");
 }
 
-export default function MapView({ onHospitalSelect, searchLocation }: MapViewProps) {
+export default function MapView({ onHospitalSelect, searchLocation, selectedFacilityId, fitAllRequest, userLocation }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const onHospitalSelectRef = useRef(onHospitalSelect);
   const [mapError, setMapError] = useState(false);
+  const markersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
+  const selectedFacilityIdRef = useRef(selectedFacilityId);
+  const userMarkerRef = useRef<maplibregl.Marker | null>(null);
+
+  useEffect(() => {
+    selectedFacilityIdRef.current = selectedFacilityId;
+    markersRef.current.forEach((marker, id) => {
+      const element = marker.getElement();
+      element.classList.toggle("er-marker-selected", id === selectedFacilityId);
+      element.setAttribute("aria-pressed", String(id === selectedFacilityId));
+    });
+  }, [selectedFacilityId]);
 
   useEffect(() => {
     onHospitalSelectRef.current = onHospitalSelect;
@@ -64,6 +81,33 @@ export default function MapView({ onHospitalSelect, searchLocation }: MapViewPro
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
     map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
+    map.on("load", () => {
+      confirmedERFacilities.forEach((facility) => {
+        const markerElement = document.createElement("button");
+        markerElement.type = "button";
+        markerElement.className = `er-map-marker ownership-${facility.data.ownership?.value ?? "unknown"}`;
+        markerElement.setAttribute("aria-label", `Confirmed emergency department: ${facility.data.hospitalName.value}`);
+        markerElement.setAttribute("aria-pressed", String(facility.id === selectedFacilityIdRef.current));
+        markerElement.innerHTML = '<span class="er-map-marker-icon">ER</span><span class="er-map-marker-name"></span>';
+        const label = markerElement.querySelector(".er-map-marker-name");
+        if (label) label.textContent = facility.data.hospitalName.value;
+        markerElement.addEventListener("click", () => {
+          onHospitalSelectRef.current({
+            name: facility.data.hospitalName.value,
+            locality: facility.data.locality.value,
+            longitude: facility.mapLocation[0],
+            latitude: facility.mapLocation[1],
+            erConfirmed: true,
+            facilityId: facility.id,
+            enrichment: facility.data
+          });
+          map.flyTo({ center: facility.mapLocation, zoom: 15.7, duration: 650 });
+        });
+        markersRef.current.set(facility.id, new maplibregl.Marker({ element: markerElement, anchor: "bottom" })
+          .setLngLat(facility.mapLocation)
+          .addTo(map));
+      });
+    });
     map.on("error", (event) => {
       if (event.error) setMapError(true);
     });
@@ -98,7 +142,9 @@ export default function MapView({ onHospitalSelect, searchLocation }: MapViewPro
           .find((value): value is string => typeof value === "string" && value.trim().length > 0),
         longitude: mapCoordinates[0],
         latitude: mapCoordinates[1],
-        enrichment: findHospitalEnrichment(name, mapCoordinates)
+        erConfirmed: Boolean(findConfirmedERFacility(name, mapCoordinates)),
+        facilityId: findConfirmedERFacility(name, mapCoordinates)?.id,
+        enrichment: findConfirmedERFacility(name, mapCoordinates)?.data
       });
     });
     map.on("mousemove", (event) => {
@@ -114,9 +160,35 @@ export default function MapView({ onHospitalSelect, searchLocation }: MapViewPro
 
     return () => {
       map.remove();
+      markersRef.current.clear();
+      userMarkerRef.current = null;
       mapRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (fitAllRequest < 1 || !mapRef.current || confirmedERFacilities.length === 0) return;
+    const bounds = new maplibregl.LngLatBounds();
+    confirmedERFacilities.forEach((facility) => bounds.extend(facility.mapLocation));
+    mapRef.current.fitBounds(bounds, { padding: 64, maxZoom: 12.5, duration: 800 });
+  }, [fitAllRequest]);
+
+  useEffect(() => {
+    if (!mapRef.current || !userLocation) return;
+    if (!userMarkerRef.current) {
+      const element = document.createElement("div");
+      element.className = "user-location-marker";
+      element.setAttribute("aria-label", "Your current location");
+      userMarkerRef.current = new maplibregl.Marker({ element, anchor: "center" }).addTo(mapRef.current);
+    }
+    userMarkerRef.current.setLngLat([userLocation.longitude, userLocation.latitude]);
+  }, [userLocation]);
+
+  useEffect(() => {
+    if (!selectedFacilityId || !mapRef.current) return;
+    const facility = confirmedERFacilities.find((item) => item.id === selectedFacilityId);
+    if (facility) mapRef.current.flyTo({ center: facility.mapLocation, zoom: Math.max(mapRef.current.getZoom(), 14.5), duration: 650 });
+  }, [selectedFacilityId]);
 
   useEffect(() => {
     if (!searchLocation) return;
@@ -126,6 +198,20 @@ export default function MapView({ onHospitalSelect, searchLocation }: MapViewPro
       duration: 1000,
       essential: true
     });
+    const matched = searchLocation.isHospital
+      ? findConfirmedERFacility(searchLocation.name, [searchLocation.longitude, searchLocation.latitude])
+      : undefined;
+    if (searchLocation.isHospital) {
+      onHospitalSelectRef.current({
+        name: matched?.data.hospitalName.value ?? searchLocation.name,
+        locality: matched?.data.locality.value ?? searchLocation.context,
+        longitude: searchLocation.longitude,
+        latitude: searchLocation.latitude,
+        erConfirmed: Boolean(matched),
+        facilityId: matched?.id,
+        enrichment: matched?.data
+      });
+    }
   }, [searchLocation]);
 
   if (!styleUrl) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { findConfirmedERFacility } from "@/lib/hospital-directory";
 
 export type SearchLocation = {
   id: string;
@@ -9,6 +10,7 @@ export type SearchLocation = {
   label: string;
   longitude: number;
   latitude: number;
+  isHospital: boolean;
 };
 
 type SearchState =
@@ -63,7 +65,12 @@ function toSearchLocation(feature: PhotonFeature, index: number): SearchLocation
     context,
     label: [name, context].filter(Boolean).join(", "),
     longitude,
-    latitude
+    latitude,
+    isHospital: [
+      `${asText(properties.osm_key)} ${asText(properties.osm_value)}`,
+      asText(properties.healthcare),
+      asText(properties.amenity)
+    ].some((value) => /(^|\s)(hospital|healthcare hospital)(\s|$)/i.test(value))
   };
 }
 
@@ -217,7 +224,7 @@ export default function LocationSearch({ onSelect }: LocationSearchProps) {
               onClick={() => selectResult(result)}
             >
               <span className="search-result-icon" aria-hidden="true">⌖</span>
-              <span className="search-result-copy"><strong>{result.name}</strong><small>{result.context}</small><em>Map search result · not ERMap-verified</em></span>
+              <span className="search-result-copy"><strong>{result.name}</strong><small>{result.context}</small><em>{result.isHospital && !findConfirmedERFacility(result.name, [result.longitude, result.latitude]) ? "ER availability not confirmed · map-provider result" : result.isHospital ? "ERMap confirmed · published source" : "Map search result · not ERMap-verified"}</em></span>
             </button>
           ))}
           <div className="search-attribution">Search via <a href="https://github.com/komoot/photon" target="_blank" rel="noreferrer">Photon</a> · Data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a></div>

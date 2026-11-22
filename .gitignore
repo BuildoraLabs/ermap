@@ -2,8 +2,12 @@ node_modules
 .next
 out
 build
+dist
+coverage
+*.tsbuildinfo
 .env*
 !.env.example
 .vercel
 *.log
+*.log.*
 .DS_Store

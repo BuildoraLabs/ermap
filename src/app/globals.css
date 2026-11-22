@@ -75,6 +75,20 @@ button { font: inherit; }
 .map-frame { position: relative; flex: 1; min-height: 480px; overflow: hidden; border: 1px solid #dce4de; border-radius: 17px; background: #e8ede7; box-shadow: 0 5px 16px #19382a0a; }
 .map-canvas-wrap, .map-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .map-canvas { background: #e8ede7; }
+.er-map-marker { min-width: 38px; min-height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px 3px 3px; border: 2px solid #fff; border-radius: 24px; background: #237d61; color: #fff; cursor: pointer; box-shadow: 0 3px 12px #183c2e55; transition: transform .15s ease, box-shadow .15s ease; }
+.er-map-marker:hover, .er-map-marker.er-marker-selected { transform: scale(1.08); box-shadow: 0 4px 16px #183c2e66; }
+.er-map-marker.ownership-government { background: #346f9f; }
+.er-map-marker.ownership-private { background: #237d61; }
+.er-map-marker.ownership-trust_charitable { background: #735b98; }
+.er-map-marker.ownership-unknown { background: #707d75; }
+.er-map-marker-icon { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: #167353; font-size: 10px; font-weight: 900; letter-spacing: -.5px; }
+.ownership-government .er-map-marker-icon { color: #315f8c; }
+.ownership-trust_charitable .er-map-marker-icon { color: #674a8c; }
+.ownership-unknown .er-map-marker-icon { color: #5c6a61; }
+.er-map-marker-name { max-width: 130px; overflow: hidden; font-size: 10px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.user-location-marker { width: 18px; height: 18px; border: 3px solid white; border-radius: 50%; background: #3388db; box-shadow: 0 0 0 6px #3388db38, 0 1px 8px #193c58aa; }
+.map-marker-legend { position: absolute; right: 13px; bottom: 12px; z-index: 2; display: flex; align-items: center; gap: 7px; padding: 6px 9px; border: 1px solid #e4eae4; border-radius: 8px; background: #ffffffed; color: #67766d; font-size: 9px; font-weight: 600; box-shadow: 0 2px 8px #18342814; pointer-events: none; }
+.legend-er { width: 21px; height: 21px; display: grid; place-items: center; border-radius: 50%; background: #087b64; color: white; font-size: 8px; font-weight: 900; }
 .maplibregl-ctrl-group { overflow: hidden; border: 1px solid #e2e7e2 !important; border-radius: 10px !important; box-shadow: 0 2px 8px #18342812 !important; }
 .maplibregl-ctrl-group button { width: 34px !important; height: 34px !important; }
 .maplibregl-ctrl-attrib { border-radius: 5px 0 0 0; font-size: 10px; }
@@ -92,12 +106,49 @@ button { font: inherit; }
 .map-setup > p:last-child { max-width: 320px; margin: 10px auto 0; color: #75817a; font-size: 12px; line-height: 1.7; }
 .map-setup code { color: #245e49; font-size: 11px; }
 .map-error { position: absolute; inset: auto 16px 16px; z-index: 3; padding: 11px 14px; border: 1px solid #f2d5d5; border-radius: 9px; background: #fff9f8; color: #9d353c; font-size: 11px; box-shadow: 0 4px 12px #18342812; }
+.location-button { cursor: pointer; }
+.location-button:disabled { cursor: progress; opacity: .65; }
+.location-button.is-loading svg { animation: search-spin .8s linear infinite; }
+.location-message { margin: -4px 2px 8px; color: #9b6a4e; font-size: 10px; }
+.location-success { color: #418167; }
 .care-panel { display: flex; flex-direction: column; max-height: calc(100dvh - 122px); overflow-y: auto; padding: 4px 8px 4px 0; scrollbar-width: thin; scrollbar-color: #d7e0d9 transparent; }
 .panel-heading { order: 0; }
 .emergency-card { order: 1; }
-.ownership-section { order: 2; }
-.hospital-detail, .results-empty { order: 3; }
+.ownership-section { order: 3; }
+.hospital-detail { order: 2; }
+.results-empty { order: 4; }
 .trust-note { order: 4; }
+.er-directory { order: 4; margin-top: 16px; }
+.directory-heading-row { display: flex; align-items: end; justify-content: space-between; gap: 9px; }
+.directory-heading-row h2 { margin: 4px 0 0; color: #20342a; font-size: 17px; letter-spacing: -.3px; }
+.directory-count { padding: 5px 8px; border: 1px solid #e1e9e2; border-radius: 20px; background: #fff; color: #5e7568; font-size: 9px; font-weight: 700; white-space: nowrap; }
+.directory-note { margin: 6px 0 8px; color: #78867d; font-size: 10px; line-height: 1.45; }
+.view-all-map { width: 100%; min-height: 34px; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; border: 1px solid #dbe8de; border-radius: 8px; background: #eff7f1; color: #267254; font-size: 10px; font-weight: 700; text-align: left; cursor: pointer; }
+.facility-list { display: grid; gap: 7px; margin: 8px 0 0; padding: 0; list-style: none; }
+.facility-card { width: 100%; display: flex; align-items: center; gap: 9px; padding: 10px; border: 1px solid #e5ebe5; border-radius: 10px; background: #fff; color: inherit; text-align: left; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.facility-card:hover, .facility-card.is-selected { border-color: #a9cdbb; background: #f8fbf8; }
+.facility-card-wrap { display: flex; align-items: center; gap: 6px; padding: 4px 7px 4px 4px; border: 1px solid #e5ebe5; border-radius: 10px; background: #fff; transition: border-color .15s ease, background .15s ease; }
+.facility-card-wrap:hover, .facility-card-wrap.is-selected { border-color: #a9cdbb; background: #f8fbf8; }
+.facility-card-wrap .facility-card { width: auto; min-width: 0; flex: 1; padding: 4px; border: 0; background: transparent; }
+.facility-card-wrap .facility-card:hover, .facility-card-wrap .facility-card.is-selected { border-color: transparent; background: transparent; }
+.facility-er-symbol { width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center; border-radius: 10px; background: #eaf6f0; color: #176b4f; font-size: 11px; font-weight: 900; }
+.facility-er-symbol.ownership-government { background: #edf4fb; color: #315f8c; }
+.facility-er-symbol.ownership-trust_charitable { background: #f3eef9; color: #674a8c; }
+.facility-copy { min-width: 0; display: flex; flex: 1; flex-direction: column; gap: 3px; }
+.facility-copy > strong { overflow: hidden; color: #2b4035; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.facility-copy > small { color: #77857d; font-size: 9px; }
+.facility-meta { display: flex; flex-wrap: wrap; gap: 4px; }
+.facility-meta em { width: fit-content; padding: 3px 5px; border-radius: 5px; background: #eff6f1; color: #4d7760; font-size: 8px; font-style: normal; font-weight: 600; }
+.facility-meta .ownership-text { background: #eaf6f0; color: #246a4e; }
+.facility-meta .ownership-text-government { background: #edf4fb; color: #315f8c; }
+.facility-meta .ownership-text-trust_charitable { background: #f3eef9; color: #674a8c; }
+.facility-phone-area { flex: 0 0 auto; display: flex; align-items: flex-end; flex-direction: column; gap: 4px; }
+.facility-phone-number { color: #64746a; font-size: 8px; font-weight: 600; white-space: nowrap; }
+.facility-phone { display: inline-grid; min-width: 48px; min-height: 33px; place-items: center; border-radius: 8px; background: #087b64; color: #fff; font-size: 10px; font-weight: 700; text-decoration: none; }
+.facility-phone-unavailable { color: #858f89; font-size: 8px; }
+.directory-empty { display: flex; flex-direction: column; gap: 4px; margin-top: 9px; padding: 12px; border: 1px dashed #dce4de; border-radius: 9px; background: #fbfcfa; color: #68766e; font-size: 10px; line-height: 1.45; }
+.directory-empty strong { color: #44594c; font-size: 11px; }
+.directory-data-note { margin: 9px 1px 0; color: #88948d; font-size: 9px; line-height: 1.45; }
 .eyebrow { margin: 0; color: #668477; font-size: 9px; font-weight: 800; letter-spacing: 1.3px; }
 .panel-heading h1 { margin: 9px 0 8px; color: #172922; font-size: 33px; line-height: 1.08; letter-spacing: -1.4px; }
 .panel-heading h1 em { color: #32846a; font-style: normal; }
@@ -129,6 +180,11 @@ button { font: inherit; }
 .detail-title-wrap h2 { margin: 6px 0 3px; color: #1b3026; font-size: 24px; line-height: 1.2; letter-spacing: -.5px; }
 .map-provider-name { margin: 3px 0; color: #87928b; font-size: 10px; }
 .hospital-locality { margin: 0; color: #77857c; font-size: 12px; }
+.er-status-badge { width: fit-content; max-width: 100%; margin-top: 9px; padding: 8px 10px; border: 1px solid #d6ebdf; border-radius: 9px; background: #eaf7ef; color: #206746; }
+.er-status-badge > strong { display: block; font-size: 11px; letter-spacing: .45px; }
+.er-status-badge .detail-source { margin-top: 3px; }
+.er-status-not-confirmed { border-color: #e4e7e4; background: #f3f5f3; color: #626d66; }
+.facility-distance { margin: 7px 0 0; color: #54816a; font-size: 10px; font-weight: 700; }
 .detail-close { width: 26px; height: 26px; flex: 0 0 26px; border: 1px solid #e7ece7; border-radius: 8px; background: #fbfcfb; color: #66746c; font-size: 19px; line-height: 1; cursor: pointer; }
 .ownership-badge { width: fit-content; max-width: 100%; min-height: 31px; display: inline-flex; align-items: center; margin-top: 9px; padding: 0 11px; border: 1px solid transparent; border-radius: 8px; }
 .ownership-badge > strong { overflow-wrap: anywhere; font-size: 12px; line-height: 1.2; letter-spacing: .55px; }
@@ -167,6 +223,7 @@ button { font: inherit; }
 .contact-priority { display: grid; gap: 8px; margin-top: 13px; }
 .phone-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0; padding: 12px 13px; border: 1px solid #e4ece5; border-radius: 10px; background: #f7f9f6; }
 .phone-row.phone-emergency { border-color: #efd7d6; background: #fff8f7; }
+.emergency-number-unavailable { margin: 0 2px; color: #7c8980; font-size: 9px; }
 .phone-row > div { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
 .phone-row .phone-label { color: #58675e; font-size: 11px; }
 .hospital-phone-number { color: #275d46; font-size: 20px; font-weight: 800; text-decoration: none; letter-spacing: -.25px; }
@@ -180,6 +237,9 @@ button { font: inherit; }
 .bed-count .detail-source { width: 100%; padding-left: 1px; }
 .bed-separation-note { margin: 7px 1px 0; color: #78857d; font-size: 10px; line-height: 1.45; }
 .provider-disclaimer { margin: 14px 0 0; padding-top: 11px; border-top: 1px solid #edf0ed; color: #6c7b71; font-size: 10px; line-height: 1.5; }
+.emergency-hours-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 5px 8px; padding: 9px 1px; border-bottom: 1px solid #edf1ed; color: #58675e; font-size: 11px; }
+.emergency-hours-row > strong { font-size: 10px; text-align: right; }
+.emergency-hours-row .detail-source { grid-column: 1 / -1; }
 .empty-icon { width: 39px; height: 39px; display: grid; place-items: center; border: 1px solid #e3ebe4; border-radius: 12px; background: #f2f7f2; }
 .empty-icon svg { width: 22px; fill: none; stroke: #72947f; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .results-empty h2 { margin: 10px 0 5px; font-size: 12px; }
@@ -246,7 +306,8 @@ button { font: inherit; }
   .emergency-card { order: 2; }
   .ownership-section { order: 3; }
   .results-empty { order: 4; }
-  .trust-note { order: 5; }
+  .er-directory { order: 5; margin-top: 14px; }
+  .trust-note { order: 6; }
   .panel-heading { display: grid; grid-template-columns: 1fr auto; align-items: end; column-gap: 10px; }
   .panel-heading .eyebrow { grid-column: 1 / -1; font-size: 8px; }
   .panel-heading h1 { margin: 5px 0 0; font-size: 22px; line-height: 1.05; letter-spacing: -.8px; }
@@ -291,6 +352,13 @@ button { font: inherit; }
   .bed-count .detail-source { flex-basis: 100%; }
   .bed-separation-note, .provider-disclaimer { font-size: 10px; }
   .provider-location { gap: 7px; padding: 8px; }
+  .map-marker-legend { right: 8px; bottom: 8px; font-size: 8px; }
+  .er-map-marker { min-height: 34px; }
+  .er-map-marker-name { max-width: 100px; }
+  .directory-heading-row h2 { font-size: 15px; }
+  .facility-card { padding: 9px; gap: 7px; }
+  .facility-copy > strong { font-size: 10px; }
+  .facility-phone { min-width: 42px; min-height: 31px; }
   .directions-action { padding: 6px; }
   .empty-icon { width: 32px; height: 32px; grid-row: 1 / 3; border-radius: 9px; }
   .empty-icon svg { width: 19px; }

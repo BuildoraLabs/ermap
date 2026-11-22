@@ -199,7 +199,7 @@ export default function Home() {
                           <span className={`facility-er-symbol ownership-${ownershipName ?? "unknown"}`}>ER</span>
                           <span className="facility-copy"><strong>{facility.data.hospitalName.value}</strong><small>{facility.data.locality.value}{distance !== undefined ? ` · ${formatDistance(distance)}` : ""}</small><span className="facility-meta">{ownershipLabel && <em className={`ownership-text ownership-text-${ownershipName}`}>{ownershipLabel}</em>}<em>{facility.data.emergency24x7.value ? "24/7 emergency published" : "Hours: call to confirm"}</em></span></span>
                         </button>
-                        <span className="facility-phone-area">{phone ? <><span className="facility-phone-number">{formatPhoneDisplay(phone.value)}</span><a className="facility-phone" href={`tel:${phoneHref(phone.value)}`} aria-label={`Call ${facility.data.hospitalName.value}`}>Call</a></> : <span className="facility-phone-unavailable">Phone unavailable</span>}</span>
+                        <span className="facility-phone-area">{phone ? <><span className="facility-phone-number">{formatPhoneDisplay(phone.value)}</span><a className="facility-phone" href={`tel:${phoneHref(phone.value)}`} aria-label={`Call general hospital contact for ${facility.data.hospitalName.value}`}>Call hospital</a></> : <span className="facility-phone-unavailable">Phone unavailable</span>}</span>
                       </div>
                     </li>
                   );

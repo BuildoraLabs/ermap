@@ -154,6 +154,7 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
       emergency24x7: verified(true, baptistEmergency),
       generalPhone: verified("080-22024700", baptistContact),
       emergencyPhone: verified("8880408040", "https://bbh.org.in/patients/"),
+      ownership: verified("trust_charitable", "https://bbh.org.in/about/"),
       emergencyDetails: {}
     }
   },
@@ -173,6 +174,7 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
       emergency24x7: verified(true, ramaiahEmergency),
       generalPhone: verified("080-6215-3300", ramaiahContact),
       emergencyPhone: verified("1800-123-1133", ramaiahContact, ramaiahEmergency),
+      ownership: verified("trust_charitable", "https://www.msrmc.ac.in/uploads/naac/Organogram-Modified.pdf", "https://msrmh.com/about-ms-ramaiah-hospital/"),
       emergencyDetails: {
         Trauma: verified(true, ramaiahEmergency),
         Cardiac: verified(true, ramaiahEmergency),
@@ -205,6 +207,24 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
         Stroke: verified(true, "https://regalhospital.com/accident-and-emergency/")
       }
     }
+  }
+];
+
+// Government hospital contact published in the Government of India's ORS
+// directory. It is listed separately because the available source does not
+// confirm emergency department hours or services, so it must not receive an ER pin.
+export const publicHospitalContacts = [
+  {
+    id: "general-hospital-yelahanka",
+    name: "General Hospital Yelahanka",
+    locality: "Old Town Yelahanka, Bengaluru North",
+    address: "General Hospital Yelahanka, Old Town, Yelahanka, Bengaluru North 560064",
+    phone: "0802-8563885",
+    ownership: "government" as const,
+    emergencyStatus: "Emergency department hours and services: call to confirm",
+    phoneSource: "https://ors.nic.in/nodal_officer_list.html",
+    facilitySource: "https://kla.kar.nic.in/council/Replies/unstarred/10032025/usq482%2810032025%29.pdf",
+    lastVerified: verifiedOn
   }
 ];
 

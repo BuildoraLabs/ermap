@@ -7,6 +7,7 @@ import MapView, { type MapHospital } from "@/components/map-view";
 import {
   confirmedERFacilities,
   distanceMeters,
+  publicHospitalContacts,
   type EmergencyCapability,
   type OwnershipCategory
 } from "@/lib/hospital-directory";
@@ -210,7 +211,24 @@ export default function Home() {
             ) : (
               <div className="directory-empty" role="status"><strong>No confirmed ER facilities match these filters.</strong><span>Remove a filter to see the available published ER information.</span></div>
             )}
-            <p className="directory-data-note">Map-provider hospital results are not ERMap records. A facility appears here only when an emergency department is supported by a published source.</p>
+            {ownership !== "Private" && ownership !== "Trust / Charitable" && activeConditions.length === 0 && publicHospitalContacts.map((contact) => (
+              <section className="public-hospital-contact" key={contact.id} aria-label="Government hospital contact">
+                <div className="public-contact-heading">
+                  <span className="ownership-text ownership-text-government">GOVERNMENT</span>
+                  <span className="public-contact-status">Emergency status not confirmed</span>
+                </div>
+                <a className="public-contact-name" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}`} target="_blank" rel="noreferrer">{contact.name}</a>
+                <span className="public-contact-locality">{contact.locality}</span>
+                <span className="public-contact-address">{contact.address}</span>
+                <p>{contact.emergencyStatus}. Call to check before travelling.</p>
+                <div className="public-contact-actions">
+                  <a className="facility-phone" href={`tel:${contact.phone.replace(/[^+\d]/g, "")}`}>Call {contact.phone}</a>
+                  <a className="public-contact-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contact.address)}`} target="_blank" rel="noreferrer">Directions</a>
+                </div>
+                <small>Phone source: <a href={contact.phoneSource} target="_blank" rel="noreferrer">Government of India ORS directory</a> · Facility type and address: <a href={contact.facilitySource} target="_blank" rel="noreferrer">Karnataka Legislative Council</a> · checked {contact.lastVerified}</small>
+              </section>
+            ))}
+            <p className="directory-data-note">Map-provider hospital results are not ERMap records. Government hospital contacts shown separately are not confirmed ER facilities and have no ER map pin until emergency services are source-confirmed.</p>
           </section>
 
           <div className="trust-note" id="trust-note"><span aria-hidden="true">✳</span><p><strong>Information, not medical advice.</strong><br />Call the hospital to confirm emergency services and current availability before travelling.</p></div>

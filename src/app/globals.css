@@ -86,9 +86,13 @@ button { font: inherit; }
 .ownership-trust_charitable .er-map-marker-icon { color: #674a8c; }
 .ownership-unknown .er-map-marker-icon { color: #5c6a61; }
 .er-map-marker-name { max-width: 130px; overflow: hidden; font-size: 10px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.er-map-marker, .er-map-marker.ownership-government, .er-map-marker.ownership-private, .er-map-marker.ownership-trust_charitable, .er-map-marker.ownership-unknown { min-height: 42px; gap: 9px; padding: 5px 13px 5px 5px; border: 1px solid #d9e0db; border-radius: 24px; background: #fff; color: #111b16; box-shadow: 0 3px 13px #183c2e38; }
+.er-map-marker:hover, .er-map-marker.er-marker-selected { background: #fff; box-shadow: 0 5px 17px #183c2e45; }
+.er-map-marker .er-map-marker-icon { width: 30px; height: 30px; flex: 0 0 30px; border-radius: 50%; background: #c72e3c; color: #fff; font-size: 10px; }
+.er-map-marker .er-map-marker-name { max-width: 180px; color: #111b16; font-size: 12px; font-weight: 800; letter-spacing: -.15px; }
 .user-location-marker { width: 18px; height: 18px; border: 3px solid white; border-radius: 50%; background: #3388db; box-shadow: 0 0 0 6px #3388db38, 0 1px 8px #193c58aa; }
 .map-marker-legend { position: absolute; right: 13px; bottom: 12px; z-index: 2; display: flex; align-items: center; gap: 7px; padding: 6px 9px; border: 1px solid #e4eae4; border-radius: 8px; background: #ffffffed; color: #67766d; font-size: 9px; font-weight: 600; box-shadow: 0 2px 8px #18342814; pointer-events: none; }
-.legend-er { width: 21px; height: 21px; display: grid; place-items: center; border-radius: 50%; background: #087b64; color: white; font-size: 8px; font-weight: 900; }
+.legend-er { width: 21px; height: 21px; display: grid; place-items: center; border-radius: 50%; background: #c72e3c; color: white; font-size: 8px; font-weight: 900; }
 .maplibregl-ctrl-group { overflow: hidden; border: 1px solid #e2e7e2 !important; border-radius: 10px !important; box-shadow: 0 2px 8px #18342812 !important; }
 .maplibregl-ctrl-group button { width: 34px !important; height: 34px !important; }
 .maplibregl-ctrl-attrib { border-radius: 5px 0 0 0; font-size: 10px; }
@@ -146,6 +150,18 @@ button { font: inherit; }
 .facility-phone-number { color: #64746a; font-size: 8px; font-weight: 600; white-space: nowrap; }
 .facility-phone { display: inline-grid; min-width: 48px; min-height: 33px; place-items: center; border-radius: 8px; background: #087b64; color: #fff; font-size: 10px; font-weight: 700; text-decoration: none; }
 .facility-phone-unavailable { color: #858f89; font-size: 8px; }
+.public-hospital-contact { display: flex; flex-direction: column; gap: 5px; margin-top: 9px; padding: 11px; border: 1px solid #dce6ed; border-radius: 10px; background: #f8fbfd; }
+.public-contact-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.public-contact-heading .ownership-text-government { width: fit-content; padding: 4px 6px; border-radius: 5px; background: #e7f0f8; color: #245b86; font-size: 8px; font-style: normal; font-weight: 800; letter-spacing: .45px; }
+.public-contact-status { color: #78613f; font-size: 9px; font-weight: 700; }
+.public-contact-name { width: fit-content; color: #111b16; font-size: 13px; font-weight: 800; text-decoration: underline; text-decoration-color: #a6b8ac; text-underline-offset: 2px; }
+.public-contact-locality, .public-contact-address { color: #68776f; font-size: 9px; line-height: 1.4; }
+.public-hospital-contact p { margin: 2px 0; color: #78613f; font-size: 9px; line-height: 1.45; }
+.public-contact-actions { display: flex; align-items: center; gap: 8px; }
+.public-contact-actions .facility-phone { padding: 0 10px; }
+.public-contact-directions { color: #315f8c; font-size: 10px; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.public-hospital-contact > small { color: #77847d; font-size: 8px; line-height: 1.45; }
+.public-hospital-contact > small a { color: #315f8c; }
 .directory-empty { display: flex; flex-direction: column; gap: 4px; margin-top: 9px; padding: 12px; border: 1px dashed #dce4de; border-radius: 9px; background: #fbfcfa; color: #68766e; font-size: 10px; line-height: 1.45; }
 .directory-empty strong { color: #44594c; font-size: 11px; }
 .directory-data-note { margin: 9px 1px 0; color: #88948d; font-size: 9px; line-height: 1.45; }
@@ -353,8 +369,8 @@ button { font: inherit; }
   .bed-separation-note, .provider-disclaimer { font-size: 10px; }
   .provider-location { gap: 7px; padding: 8px; }
   .map-marker-legend { right: 8px; bottom: 8px; font-size: 8px; }
-  .er-map-marker { min-height: 34px; }
-  .er-map-marker-name { max-width: 100px; }
+  .er-map-marker { min-height: 38px; }
+  .er-map-marker .er-map-marker-name { max-width: min(40vw, 150px); font-size: 11px; }
   .directory-heading-row h2 { font-size: 15px; }
   .facility-card { padding: 9px; gap: 7px; }
   .facility-copy > strong { font-size: 10px; }

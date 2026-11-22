@@ -219,6 +219,7 @@ export const publicHospitalContacts = [
     name: "General Hospital Yelahanka",
     locality: "Old Town Yelahanka, Bengaluru North",
     address: "General Hospital Yelahanka, Old Town, Yelahanka, Bengaluru North 560064",
+    // TODO(owner): Confirm this number by calling the hospital; retain the sourced digits until confirmed.
     phone: "0802-8563885",
     ownership: "government" as const,
     emergencyStatus: "Emergency department hours and services: call to confirm",

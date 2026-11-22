@@ -11,6 +11,7 @@ import {
   type EmergencyCapability,
   type OwnershipCategory
 } from "@/lib/hospital-directory";
+import { formatPhoneDisplay, phoneHref } from "@/lib/display-format";
 
 const conditions = [
   { name: "Trauma", icon: "+", capability: "Trauma" as EmergencyCapability },
@@ -32,10 +33,6 @@ type UserPoint = { longitude: number; latitude: number };
 
 function formatDistance(meters: number) {
   return meters < 1000 ? `${Math.round(meters / 10) * 10} m away` : `${(meters / 1000).toFixed(1)} km away`;
-}
-
-function phoneHref(value: string) {
-  return value.replace(/[^+\d]/g, "");
 }
 
 function facilityAsMapHospital(id: string): MapHospital | undefined {
@@ -202,7 +199,7 @@ export default function Home() {
                           <span className={`facility-er-symbol ownership-${ownershipName ?? "unknown"}`}>ER</span>
                           <span className="facility-copy"><strong>{facility.data.hospitalName.value}</strong><small>{facility.data.locality.value}{distance !== undefined ? ` · ${formatDistance(distance)}` : ""}</small><span className="facility-meta">{ownershipLabel && <em className={`ownership-text ownership-text-${ownershipName}`}>{ownershipLabel}</em>}<em>{facility.data.emergency24x7.value ? "24/7 emergency published" : "Hours: call to confirm"}</em></span></span>
                         </button>
-                        <span className="facility-phone-area">{phone ? <><span className="facility-phone-number">{phone.value}</span><a className="facility-phone" href={`tel:${phoneHref(phone.value)}`} aria-label={`Call ${facility.data.hospitalName.value}`}>Call</a></> : <span className="facility-phone-unavailable">Phone unavailable</span>}</span>
+                        <span className="facility-phone-area">{phone ? <><span className="facility-phone-number">{formatPhoneDisplay(phone.value)}</span><a className="facility-phone" href={`tel:${phoneHref(phone.value)}`} aria-label={`Call ${facility.data.hospitalName.value}`}>Call</a></> : <span className="facility-phone-unavailable">Phone unavailable</span>}</span>
                       </div>
                     </li>
                   );
@@ -222,7 +219,7 @@ export default function Home() {
                 <span className="public-contact-address">{contact.address}</span>
                 <p>{contact.emergencyStatus}. Call to check before travelling.</p>
                 <div className="public-contact-actions">
-                  <a className="facility-phone" href={`tel:${contact.phone.replace(/[^+\d]/g, "")}`}>Call {contact.phone}</a>
+                  <a className="facility-phone" href={`tel:${phoneHref(contact.phone)}`}>Call {formatPhoneDisplay(contact.phone)}</a>
                   <a className="public-contact-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contact.address)}`} target="_blank" rel="noreferrer">Directions</a>
                 </div>
                 <small>Phone source: <a href={contact.phoneSource} target="_blank" rel="noreferrer">Government of India ORS directory</a> · Facility type and address: <a href={contact.facilitySource} target="_blank" rel="noreferrer">Karnataka Legislative Council</a> · checked {contact.lastVerified}</small>

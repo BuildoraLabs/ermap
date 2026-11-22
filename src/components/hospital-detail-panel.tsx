@@ -4,6 +4,7 @@ import type {
   VerifiedValue
 } from "@/lib/hospital-directory";
 import type { MapHospital } from "@/components/map-view";
+import { formatPhoneDisplay, phoneHref } from "@/lib/display-format";
 
 type HospitalDetailPanelProps = {
   hospital: MapHospital;
@@ -44,10 +45,6 @@ function hasSourcedValue<T>(item: VerifiedValue<T> | undefined): item is Verifie
   );
 }
 
-function formatPhone(value: string) {
-  return value.replace(/[^+\d]/g, "");
-}
-
 function SourceAndDate<T>({ item }: { item: VerifiedValue<T> }) {
   return (
     <small className="detail-source">
@@ -63,7 +60,7 @@ function SourceAndDate<T>({ item }: { item: VerifiedValue<T> }) {
 }
 
 function CallAction({ phone, label }: { phone: string; label: string }) {
-  const normalizedPhone = formatPhone(phone);
+  const normalizedPhone = phoneHref(phone);
   if (normalizedPhone.length < 7) return null;
 
   return <a className="call-hospital-action" href={`tel:${normalizedPhone}`}>{label}</a>;
@@ -135,7 +132,7 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
           <div className="phone-row phone-general">
             <div>
               <strong className="phone-label">General hospital contact</strong>
-              <a className="hospital-phone-number" href={`tel:${formatPhone(generalPhone.value)}`}>{generalPhone.value}</a>
+              <a className="hospital-phone-number" href={`tel:${phoneHref(generalPhone.value)}`}>{formatPhoneDisplay(generalPhone.value)}</a>
               <SourceAndDate item={generalPhone} />
               <small className="phone-routing-note">Published contact number; hours are not implied. {emergencyPhone ? "" : "Ask to be connected to casualty / emergency."}</small>
             </div>
@@ -146,7 +143,7 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
           <div className="phone-row phone-emergency">
             <div>
               <strong className="phone-label">Emergency department phone</strong>
-              <a className="hospital-phone-number" href={`tel:${formatPhone(emergencyPhone.value)}`}>{emergencyPhone.value}</a>
+              <a className="hospital-phone-number" href={`tel:${phoneHref(emergencyPhone.value)}`}>{formatPhoneDisplay(emergencyPhone.value)}</a>
               <SourceAndDate item={emergencyPhone} />
             </div>
             <CallAction phone={emergencyPhone.value} label="Call emergency department" />

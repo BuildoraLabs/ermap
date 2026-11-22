@@ -33,7 +33,7 @@ const ownershipKey: Record<string, OwnershipCategory | undefined> = {
 type UserPoint = { longitude: number; latitude: number };
 
 function formatDistance(meters: number) {
-  return meters < 1000 ? `${Math.round(meters / 10) * 10} m away` : `${(meters / 1000).toFixed(1)} km away`;
+  return meters < 1000 ? `${Math.round(meters / 10) * 10} m straight-line distance` : `${(meters / 1000).toFixed(1)} km straight-line distance`;
 }
 
 function facilityAsMapHospital(id: string): MapHospital | undefined {
@@ -248,7 +248,7 @@ export default function Home() {
 
           <section className="er-directory" aria-labelledby="directory-heading">
             <div className="directory-heading-row"><div><p className="eyebrow">PUBLISHED ER INFORMATION</p><h2 id="directory-heading">Emergency departments</h2></div><span className="directory-count">{visibleFacilities.length} of {confirmedERFacilities.length}</span></div>
-            <p className="directory-note">Up to 10 confirmed facilities, arranged by locality{userLocation ? " and distance" : ""}. Services and availability may change.</p>
+            <p className="directory-note">Up to 10 confirmed facilities, arranged by locality{userLocation ? " and straight-line distance" : ""}. Services and availability may change.</p>
             <button className="view-all-map" type="button" onClick={() => { setSelectedHospital(null); setFitAllRequest((value) => value + 1); }}>View all on map <span aria-hidden="true">↗</span></button>
             {visibleFacilities.length > 0 && (
               <FacilityDirectoryList entries={visibleFacilities} selectedFacilityId={selectedHospital?.facilityId} onSelect={(id) => setSelectedHospital(facilityAsMapHospital(id) ?? null)} />

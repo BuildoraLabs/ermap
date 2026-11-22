@@ -109,7 +109,7 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
             <strong>{erStatus === "confirmed" ? "CONFIRMED ER" : "ER availability not confirmed"}</strong>
             {erStatus === "confirmed" && erAvailability && <SourceAndDate item={erAvailability} />}
           </div>
-          {distance !== undefined && <p className="facility-distance">{distance < 1000 ? `${Math.round(distance / 10) * 10} m` : `${(distance / 1000).toFixed(1)} km`} from your location</p>}
+          {distance !== undefined && <p className="facility-distance">{distance < 1000 ? `${Math.round(distance / 10) * 10} m` : `${(distance / 1000).toFixed(1)} km`} straight-line distance from your location</p>}
           {ownership && (
             <>
               <div className={`ownership-badge ownership-${ownership.value}`}><strong>{ownershipLabels[ownership.value]}</strong></div>

@@ -8,6 +8,7 @@ import {
   confirmedERFacilities,
   distanceMeters,
   publicHospitalContacts,
+  type ConfirmedERFacility,
   type EmergencyCapability,
   type OwnershipCategory
 } from "@/lib/hospital-directory";
@@ -49,6 +50,61 @@ function facilityAsMapHospital(id: string): MapHospital | undefined {
   };
 }
 
+type FacilityDisplayEntry = {
+  facility: ConfirmedERFacility;
+  distance?: number;
+};
+
+function FacilityDirectoryList({ entries, selectedFacilityId, onSelect }: {
+  entries: FacilityDisplayEntry[];
+  selectedFacilityId?: string;
+  onSelect: (facilityId: string) => void;
+}) {
+  return (
+    <ol className="facility-list">
+      {entries.map(({ facility, distance }) => {
+        const phone = facility.data.generalPhone;
+        const ownershipName = facility.data.ownership?.value;
+        const ownershipLabel = ownershipName === "private" ? "PRIVATE" : ownershipName === "government" ? "GOVERNMENT" : ownershipName === "trust_charitable" ? "TRUST / CHARITABLE" : undefined;
+        const selected = selectedFacilityId === facility.id;
+        return (
+          <li key={facility.id}>
+            <div className={`facility-card-wrap ${selected ? "is-selected" : ""}`}>
+              <button type="button" className={`facility-card ${selected ? "is-selected" : ""}`} onClick={() => onSelect(facility.id)}>
+                <span className={`facility-er-symbol ownership-${ownershipName ?? "unknown"}`}>ER</span>
+                <span className="facility-copy"><strong>{facility.data.hospitalName.value}</strong><small>{facility.data.locality.value}{distance !== undefined ? ` · ${formatDistance(distance)}` : ""}</small><span className="facility-meta">{ownershipLabel && <em className={`ownership-text ownership-text-${ownershipName}`}>{ownershipLabel}</em>}<em>{facility.data.emergency24x7.value ? "24/7 emergency published" : "Hours: call to confirm"}</em></span></span>
+              </button>
+              <span className="facility-phone-area">{phone ? <><span className="facility-phone-number">{formatPhoneDisplay(phone.value)}</span><a className="facility-phone" href={`tel:${phoneHref(phone.value)}`} aria-label={`Call general hospital contact for ${facility.data.hospitalName.value}`}>Call hospital</a></> : <span className="facility-phone-unavailable">Phone unavailable</span>}</span>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+type PublicHospitalContact = (typeof publicHospitalContacts)[number];
+
+function PublicHospitalContactCard({ contact }: { contact: PublicHospitalContact }) {
+  return (
+    <section className="public-hospital-contact" key={contact.id} aria-label="Government hospital contact">
+      <div className="public-contact-heading">
+        <span className="ownership-text ownership-text-government">GOVERNMENT</span>
+        <span className="public-contact-status">Emergency status not confirmed</span>
+      </div>
+      <a className="public-contact-name" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}`} target="_blank" rel="noreferrer">{contact.name}</a>
+      <span className="public-contact-locality">{contact.locality}</span>
+      <span className="public-contact-address">{contact.address}</span>
+      <p>{contact.emergencyStatus}. Call to check before travelling.</p>
+      <div className="public-contact-actions">
+        <a className="facility-phone" href={`tel:${phoneHref(contact.phone)}`}>Call {formatPhoneDisplay(contact.phone)}</a>
+        <a className="public-contact-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contact.address)}`} target="_blank" rel="noreferrer">Directions</a>
+      </div>
+      <small>Phone source: <a href={contact.phoneSource} target="_blank" rel="noreferrer">Government of India ORS directory</a> · Facility type and address: <a href={contact.facilitySource} target="_blank" rel="noreferrer">Karnataka Legislative Council</a> · checked {formatDateDisplay(contact.lastVerified)}</small>
+    </section>
+  );
+}
+
 export default function Home() {
   const [activeConditions, setActiveConditions] = useState<string[]>([]);
   const [ownership, setOwnership] = useState("All");
@@ -72,14 +128,10 @@ export default function Home() {
     setSearchLocation(location);
   }, []);
 
-  const visibleFacilities = useMemo(() => {
+  const { visibleFacilities, unconfirmedServiceFacilities } = useMemo(() => {
     const selectedOwnership = ownershipKey[ownership];
-    return confirmedERFacilities
+    const candidates = confirmedERFacilities
       .filter((facility) => !selectedOwnership || facility.data.ownership?.value === selectedOwnership)
-      .filter((facility) => activeConditions.every((condition) => {
-        const requiredCapability = conditions.find((item) => item.name === condition)?.capability;
-        return requiredCapability && facility.data.emergencyDetails?.[requiredCapability]?.value === true;
-      }))
       .map((facility) => ({
         facility,
         distance: userLocation
@@ -88,8 +140,21 @@ export default function Home() {
       }))
       .sort((left, right) => userLocation
         ? (left.distance ?? Infinity) - (right.distance ?? Infinity)
-        : left.facility.localityOrder - right.facility.localityOrder || left.facility.data.hospitalName.value.localeCompare(right.facility.data.hospitalName.value))
-      .slice(0, 10);
+        : left.facility.localityOrder - right.facility.localityOrder || left.facility.data.hospitalName.value.localeCompare(right.facility.data.hospitalName.value));
+    const states = candidates.map((entry) => {
+      const values = activeConditions.map((condition) => {
+        const requiredCapability = conditions.find((item) => item.name === condition)?.capability;
+        return requiredCapability
+          ? entry.facility.data.emergencyDetails?.[requiredCapability]?.value
+          : undefined;
+      });
+      return { entry, confirmed: values.every((value) => value === true), hasMissing: values.some((value) => value === undefined), excluded: values.some((value) => value === false) };
+    });
+
+    return {
+      visibleFacilities: states.filter((state) => state.confirmed).map((state) => state.entry).slice(0, 10),
+      unconfirmedServiceFacilities: states.filter((state) => !state.excluded && !state.confirmed && state.hasMissing).map((state) => state.entry).slice(0, 10)
+    };
   }, [activeConditions, ownership, userLocation]);
 
   function toggleCondition(condition: string) {
@@ -185,46 +250,23 @@ export default function Home() {
             <div className="directory-heading-row"><div><p className="eyebrow">PUBLISHED ER INFORMATION</p><h2 id="directory-heading">Emergency departments</h2></div><span className="directory-count">{visibleFacilities.length} of {confirmedERFacilities.length}</span></div>
             <p className="directory-note">Up to 10 confirmed facilities, arranged by locality{userLocation ? " and distance" : ""}. Services and availability may change.</p>
             <button className="view-all-map" type="button" onClick={() => { setSelectedHospital(null); setFitAllRequest((value) => value + 1); }}>View all on map <span aria-hidden="true">↗</span></button>
-            {visibleFacilities.length > 0 ? (
-              <ol className="facility-list">
-                {visibleFacilities.map(({ facility, distance }) => {
-                  const phone = facility.data.generalPhone;
-                  const ownershipName = facility.data.ownership?.value;
-                  const ownershipLabel = ownershipName === "private" ? "PRIVATE" : ownershipName === "government" ? "GOVERNMENT" : ownershipName === "trust_charitable" ? "TRUST / CHARITABLE" : undefined;
-                  const selected = selectedHospital?.facilityId === facility.id;
-                  return (
-                    <li key={facility.id}>
-                      <div className={`facility-card-wrap ${selected ? "is-selected" : ""}`}>
-                        <button type="button" className={`facility-card ${selected ? "is-selected" : ""}`} onClick={() => setSelectedHospital(facilityAsMapHospital(facility.id) ?? null)}>
-                          <span className={`facility-er-symbol ownership-${ownershipName ?? "unknown"}`}>ER</span>
-                          <span className="facility-copy"><strong>{facility.data.hospitalName.value}</strong><small>{facility.data.locality.value}{distance !== undefined ? ` · ${formatDistance(distance)}` : ""}</small><span className="facility-meta">{ownershipLabel && <em className={`ownership-text ownership-text-${ownershipName}`}>{ownershipLabel}</em>}<em>{facility.data.emergency24x7.value ? "24/7 emergency published" : "Hours: call to confirm"}</em></span></span>
-                        </button>
-                        <span className="facility-phone-area">{phone ? <><span className="facility-phone-number">{formatPhoneDisplay(phone.value)}</span><a className="facility-phone" href={`tel:${phoneHref(phone.value)}`} aria-label={`Call general hospital contact for ${facility.data.hospitalName.value}`}>Call hospital</a></> : <span className="facility-phone-unavailable">Phone unavailable</span>}</span>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
-            ) : (
+            {visibleFacilities.length > 0 && (
+              <FacilityDirectoryList entries={visibleFacilities} selectedFacilityId={selectedHospital?.facilityId} onSelect={(id) => setSelectedHospital(facilityAsMapHospital(id) ?? null)} />
+            )}
+            {visibleFacilities.length === 0 && unconfirmedServiceFacilities.length === 0 && !(ownership !== "Private" && ownership !== "Trust / Charitable" && activeConditions.length === 0) && (
               <div className="directory-empty" role="status"><strong>No confirmed ER facilities match these filters.</strong><span>Remove a filter to see the available published ER information.</span></div>
             )}
-            {ownership !== "Private" && ownership !== "Trust / Charitable" && activeConditions.length === 0 && publicHospitalContacts.map((contact) => (
-              <section className="public-hospital-contact" key={contact.id} aria-label="Government hospital contact">
-                <div className="public-contact-heading">
-                  <span className="ownership-text ownership-text-government">GOVERNMENT</span>
-                  <span className="public-contact-status">Emergency status not confirmed</span>
-                </div>
-                <a className="public-contact-name" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}`} target="_blank" rel="noreferrer">{contact.name}</a>
-                <span className="public-contact-locality">{contact.locality}</span>
-                <span className="public-contact-address">{contact.address}</span>
-                <p>{contact.emergencyStatus}. Call to check before travelling.</p>
-                <div className="public-contact-actions">
-                  <a className="facility-phone" href={`tel:${phoneHref(contact.phone)}`}>Call {formatPhoneDisplay(contact.phone)}</a>
-                  <a className="public-contact-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contact.address)}`} target="_blank" rel="noreferrer">Directions</a>
-                </div>
-                <small>Phone source: <a href={contact.phoneSource} target="_blank" rel="noreferrer">Government of India ORS directory</a> · Facility type and address: <a href={contact.facilitySource} target="_blank" rel="noreferrer">Karnataka Legislative Council</a> · checked {formatDateDisplay(contact.lastVerified)}</small>
+            {activeConditions.length > 0 && (unconfirmedServiceFacilities.length > 0 || (ownership !== "Private" && ownership !== "Trust / Charitable")) && (
+              <section className="service-unconfirmed-group" aria-labelledby="service-unconfirmed-heading">
+                <h3 id="service-unconfirmed-heading">Service not published: call to confirm</h3>
+                <p>These facilities do not have published information for every selected service. Their capabilities are not confirmed.</p>
+                {unconfirmedServiceFacilities.length > 0 && (
+                  <FacilityDirectoryList entries={unconfirmedServiceFacilities} selectedFacilityId={selectedHospital?.facilityId} onSelect={(id) => setSelectedHospital(facilityAsMapHospital(id) ?? null)} />
+                )}
+                {ownership !== "Private" && ownership !== "Trust / Charitable" && publicHospitalContacts.map((contact) => <PublicHospitalContactCard contact={contact} key={contact.id} />)}
               </section>
-            ))}
+            )}
+            {ownership !== "Private" && ownership !== "Trust / Charitable" && activeConditions.length === 0 && publicHospitalContacts.map((contact) => <PublicHospitalContactCard contact={contact} key={contact.id} />)}
             <p className="directory-data-note">Map-provider hospital results are not ERMap records. Government hospital contacts shown separately are not confirmed ER facilities and have no ER map pin until emergency services are source-confirmed.</p>
           </section>
 

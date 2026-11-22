@@ -165,6 +165,10 @@ button { font: inherit; }
 .directory-empty { display: flex; flex-direction: column; gap: 4px; margin-top: 9px; padding: 12px; border: 1px dashed #dce4de; border-radius: 9px; background: #fbfcfa; color: #68766e; font-size: 10px; line-height: 1.45; }
 .directory-empty strong { color: #44594c; font-size: 11px; }
 .directory-data-note { margin: 9px 1px 0; color: #88948d; font-size: 9px; line-height: 1.45; }
+.service-unconfirmed-group { margin-top: 12px; padding: 10px; border: 1px solid #ebe4d5; border-radius: 10px; background: #fcfaf6; }
+.service-unconfirmed-group > h3 { margin: 0; color: #5d4d30; font-size: 11px; font-weight: 800; }
+.service-unconfirmed-group > p { margin: 4px 0 7px; color: #7b715e; font-size: 9px; line-height: 1.45; }
+.service-unconfirmed-group .public-hospital-contact { margin-top: 8px; background: #fff; }
 .eyebrow { margin: 0; color: #668477; font-size: 9px; font-weight: 800; letter-spacing: 1.3px; }
 .panel-heading h1 { margin: 9px 0 8px; color: #172922; font-size: 33px; line-height: 1.08; letter-spacing: -1.4px; }
 .panel-heading h1 em { color: #32846a; font-style: normal; }

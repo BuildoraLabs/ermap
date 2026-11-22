@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Sample hospital A",
+    "is_sample": true,
+    "ed_status": "unconfirmed",
+    "er_beds_reported": null,
+    "er_beds_as_of": null,
+    "source": "illustrative placeholder",
+    "last_verified": null
+  },
+  {
+    "name": "Sample hospital B",
+    "is_sample": true,
+    "ed_status": "unconfirmed",
+    "er_beds_reported": null,
+    "er_beds_as_of": null,
+    "source": "illustrative placeholder",
+    "last_verified": null
+  },
+  {
+    "name": "Sample hospital C",
+    "is_sample": true,
+    "ed_status": "unconfirmed",
+    "er_beds_reported": null,
+    "er_beds_as_of": null,
+    "source": "illustrative placeholder",
+    "last_verified": null
+  }
+]

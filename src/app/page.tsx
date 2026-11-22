@@ -11,7 +11,7 @@ import {
   type EmergencyCapability,
   type OwnershipCategory
 } from "@/lib/hospital-directory";
-import { formatPhoneDisplay, phoneHref } from "@/lib/display-format";
+import { formatDateDisplay, formatPhoneDisplay, phoneHref } from "@/lib/display-format";
 
 const conditions = [
   { name: "Trauma", icon: "+", capability: "Trauma" as EmergencyCapability },
@@ -222,7 +222,7 @@ export default function Home() {
                   <a className="facility-phone" href={`tel:${phoneHref(contact.phone)}`}>Call {formatPhoneDisplay(contact.phone)}</a>
                   <a className="public-contact-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contact.address)}`} target="_blank" rel="noreferrer">Directions</a>
                 </div>
-                <small>Phone source: <a href={contact.phoneSource} target="_blank" rel="noreferrer">Government of India ORS directory</a> · Facility type and address: <a href={contact.facilitySource} target="_blank" rel="noreferrer">Karnataka Legislative Council</a> · checked {contact.lastVerified}</small>
+                <small>Phone source: <a href={contact.phoneSource} target="_blank" rel="noreferrer">Government of India ORS directory</a> · Facility type and address: <a href={contact.facilitySource} target="_blank" rel="noreferrer">Karnataka Legislative Council</a> · checked {formatDateDisplay(contact.lastVerified)}</small>
               </section>
             ))}
             <p className="directory-data-note">Map-provider hospital results are not ERMap records. Government hospital contacts shown separately are not confirmed ER facilities and have no ER map pin until emergency services are source-confirmed.</p>

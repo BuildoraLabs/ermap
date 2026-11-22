@@ -4,7 +4,7 @@ import type {
   VerifiedValue
 } from "@/lib/hospital-directory";
 import type { MapHospital } from "@/components/map-view";
-import { formatPhoneDisplay, phoneHref } from "@/lib/display-format";
+import { formatDateDisplay, formatPhoneDisplay, phoneHref } from "@/lib/display-format";
 
 type HospitalDetailPanelProps = {
   hospital: MapHospital;
@@ -28,13 +28,6 @@ const emergencyFields: EmergencyCapability[] = [
   "Maternity emergency care"
 ];
 
-function formatDate(value: string) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? value
-    : date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
-}
-
 function hasSourcedValue<T>(item: VerifiedValue<T> | undefined): item is VerifiedValue<T> {
   return Boolean(
     item
@@ -54,7 +47,7 @@ function SourceAndDate<T>({ item }: { item: VerifiedValue<T> }) {
           <a href={url} target="_blank" rel="noreferrer">{item.sourceUrls.length > 1 ? `Published source ${index + 1}` : "Published source"}</a>
         </span>
       ))}
-      {" · verified "}{formatDate(item.lastVerified)}
+      {" · verified "}{formatDateDisplay(item.lastVerified)}
     </small>
   );
 }
@@ -157,7 +150,7 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
           <SourceAndDate item={address} />
         </div>
       )}
-      {lastVerified && <p className="last-verified">Last verified {formatDate(lastVerified)}</p>}
+      {lastVerified && <p className="last-verified">Last verified {formatDateDisplay(lastVerified)}</p>}
 
       <div className="provider-location">
         <div className="provider-location-icon" aria-hidden="true">⌖</div>

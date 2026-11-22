@@ -19,3 +19,10 @@ export function formatPhoneDisplay(value: string) {
 export function phoneHref(value: string) {
   return value.replace(/\D/g, "");
 }
+
+export function formatDateDisplay(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? value
+    : date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+}

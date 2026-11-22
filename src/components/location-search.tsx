@@ -60,7 +60,7 @@ function toSearchLocation(feature: PhotonFeature, index: number): SearchLocation
   const providerId = [asText(properties.osm_type), asText(properties.osm_id)].filter(Boolean).join("-");
 
   return {
-    id: providerId || `${longitude.toFixed(5)}-${latitude.toFixed(5)}-${index}`,
+    id: `${providerId || "photon"}-${longitude.toFixed(5)}-${latitude.toFixed(5)}-${index}`,
     name,
     context,
     label: [name, context].filter(Boolean).join(", "),

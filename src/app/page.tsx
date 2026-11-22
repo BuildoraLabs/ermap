@@ -7,21 +7,20 @@ import MapView, { type MapHospital } from "@/components/map-view";
 import {
   confirmedERFacilities,
   distanceMeters,
-  publicHospitalContacts,
   type ConfirmedERFacility,
   type EmergencyCapability,
   type OwnershipCategory
 } from "@/lib/hospital-directory";
-import { formatDateDisplay, formatPhoneDisplay, isReverificationDue, phoneHref } from "@/lib/display-format";
+import { formatPhoneDisplay, isReverificationDue, phoneHref } from "@/lib/display-format";
 
 const conditions = [
   { name: "Trauma", icon: "+", capability: "Trauma" as EmergencyCapability },
-  { name: "Cardiac", icon: "♡", capability: "Cardiac" as EmergencyCapability },
-  { name: "Stroke", icon: "◒", capability: "Stroke" as EmergencyCapability },
-  { name: "Orthopaedic", icon: "⌖", help: "Emergency assessment of fractures, suspected fractures, bone, joint and musculoskeletal injuries", capability: "Orthopaedic" as EmergencyCapability },
-  { name: "Fall / Injury", icon: "↘", help: "Includes falls at home", capability: "Trauma" as EmergencyCapability },
-  { name: "Child", icon: "♧", capability: "Child / Paediatric emergency care" as EmergencyCapability },
-  { name: "Maternity", icon: "✳", capability: "Maternity emergency care" as EmergencyCapability }
+  { name: "Cardiac", icon: "\u2665", capability: "Cardiac" as EmergencyCapability },
+  { name: "Stroke", icon: "\u25CE", capability: "Stroke" as EmergencyCapability },
+  { name: "Orthopaedic", icon: "\u25C7", help: "Emergency assessment of fractures, suspected fractures, bone, joint and musculoskeletal injuries", capability: "Orthopaedic" as EmergencyCapability },
+  { name: "Fall / Injury", icon: "\u2198", help: "Includes falls at home", capability: "Trauma" as EmergencyCapability },
+  { name: "Child", icon: "\u25CF", capability: "Child / Paediatric emergency care" as EmergencyCapability },
+  { name: "Maternity", icon: "\u2733", capability: "Maternity emergency care" as EmergencyCapability }
 ];
 const ownershipOptions = ["All", "Government", "Private", "Trust / Charitable"];
 const ownershipKey: Record<string, OwnershipCategory | undefined> = {
@@ -33,7 +32,7 @@ const ownershipKey: Record<string, OwnershipCategory | undefined> = {
 type UserPoint = { longitude: number; latitude: number };
 
 function formatDistance(meters: number) {
-  return meters < 1000 ? `${Math.round(meters / 10) * 10} m straight-line distance` : `${(meters / 1000).toFixed(1)} km straight-line distance`;
+  return `${(meters / 1000).toFixed(1)} km straight-line distance`;
 }
 
 function facilityAsMapHospital(id: string): MapHospital | undefined {
@@ -71,8 +70,8 @@ function FacilityDirectoryList({ entries, selectedFacilityId, onSelect }: {
           <li key={facility.id}>
             <div className={`facility-card-wrap ${selected ? "is-selected" : ""}`}>
               <button type="button" className={`facility-card ${selected ? "is-selected" : ""}`} onClick={() => onSelect(facility.id)}>
-                <span className={`facility-er-symbol ownership-${ownershipName ?? "unknown"}`}>ER</span>
-                <span className="facility-copy"><strong>{facility.data.hospitalName.value}</strong><small>{facility.data.locality.value}{distance !== undefined ? ` · ${formatDistance(distance)}` : ""}</small><span className="facility-meta">{ownershipLabel && <em className={`ownership-text ownership-text-${ownershipName}`}>{ownershipLabel}</em>}<em>{facility.data.emergency24x7.value ? "24/7 emergency published" : "Hours: call to confirm"}</em>{isReverificationDue(facility.data.lastVerified) && <em className="reverification-due">Re-verification due</em>}</span></span>
+                <span className="facility-er-symbol">ER</span>
+                <span className="facility-copy"><strong>{facility.data.hospitalName.value}</strong><small>{facility.data.locality.value}{distance !== undefined ? ` · ${formatDistance(distance)}` : ""}</small><span className="facility-meta">{ownershipLabel && <em className={`ownership-text ownership-text-${ownershipName}`}>{ownershipLabel}</em>}<em>{facility.data.emergency24x7?.value ? "24/7 emergency published" : "Hours: call to confirm"}</em>{isReverificationDue(facility.data.lastVerified) && <em className="reverification-due">Re-verification due</em>}</span></span>
               </button>
               <span className="facility-phone-area">{phone ? <><span className="facility-phone-number">{formatPhoneDisplay(phone.value)}</span><a className="facility-phone" href={`tel:${phoneHref(phone.value)}`} aria-label={`Call general hospital contact for ${facility.data.hospitalName.value}`}>Call hospital</a></> : <span className="facility-phone-unavailable">Phone unavailable</span>}</span>
             </div>
@@ -80,28 +79,6 @@ function FacilityDirectoryList({ entries, selectedFacilityId, onSelect }: {
         );
       })}
     </ol>
-  );
-}
-
-type PublicHospitalContact = (typeof publicHospitalContacts)[number];
-
-function PublicHospitalContactCard({ contact }: { contact: PublicHospitalContact }) {
-  return (
-    <section className="public-hospital-contact" key={contact.id} aria-label="Government hospital contact">
-      <div className="public-contact-heading">
-        <span className="ownership-text ownership-text-government">GOVERNMENT</span>
-        <span className="public-contact-status">Emergency status not confirmed</span>
-      </div>
-      <a className="public-contact-name" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}`} target="_blank" rel="noreferrer">{contact.name}</a>
-      <span className="public-contact-locality">{contact.locality}</span>
-      <span className="public-contact-address">{contact.address}</span>
-      <p>{contact.emergencyStatus}. Call to check before travelling.</p>
-      <div className="public-contact-actions">
-        <a className="facility-phone" href={`tel:${phoneHref(contact.phone)}`}>Call {formatPhoneDisplay(contact.phone)}</a>
-        <a className="public-contact-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contact.address)}`} target="_blank" rel="noreferrer">Directions</a>
-      </div>
-      <small>Phone source: <a href={contact.phoneSource} target="_blank" rel="noreferrer">Government of India ORS directory</a> · Facility type and address: <a href={contact.facilitySource} target="_blank" rel="noreferrer">Karnataka Legislative Council</a> · checked {formatDateDisplay(contact.lastVerified)}{isReverificationDue(contact.lastVerified) ? " · Re-verification due" : ""}</small>
-    </section>
   );
 }
 
@@ -113,6 +90,8 @@ export default function Home() {
   const [userLocation, setUserLocation] = useState<UserPoint | null>(null);
   const [locationState, setLocationState] = useState<"idle" | "loading" | "denied" | "error">("idle");
   const [fitAllRequest, setFitAllRequest] = useState(0);
+  const [showAllHospitals, setShowAllHospitals] = useState(false);
+  const [directoryPage, setDirectoryPage] = useState(0);
   const carePanelRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -152,10 +131,18 @@ export default function Home() {
     });
 
     return {
-      visibleFacilities: states.filter((state) => state.confirmed).map((state) => state.entry).slice(0, 10),
-      unconfirmedServiceFacilities: states.filter((state) => !state.excluded && !state.confirmed && state.hasMissing).map((state) => state.entry).slice(0, 10)
+      visibleFacilities: states.filter((state) => state.confirmed).map((state) => state.entry),
+      unconfirmedServiceFacilities: states.filter((state) => !state.excluded && !state.confirmed && state.hasMissing).map((state) => state.entry)
     };
   }, [activeConditions, ownership, userLocation]);
+
+  const pageSize = showAllHospitals ? 10 : 6;
+  const allDirectoryEntries = [...visibleFacilities, ...unconfirmedServiceFacilities];
+  const pageCount = Math.max(1, Math.ceil(allDirectoryEntries.length / pageSize));
+  const currentPage = Math.min(directoryPage, pageCount - 1);
+  const pageEntries = allDirectoryEntries.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+  const pageConfirmed = pageEntries.filter((entry) => visibleFacilities.some((candidate) => candidate.facility.id === entry.facility.id));
+  const pageUnconfirmed = pageEntries.filter((entry) => unconfirmedServiceFacilities.some((candidate) => candidate.facility.id === entry.facility.id));
 
   function toggleCondition(condition: string) {
     setActiveConditions((current) => current.includes(condition)
@@ -187,7 +174,7 @@ export default function Home() {
           <span><strong>ERMap</strong><small>NORTH BENGALURU</small></span>
         </a>
         <div className="topbar-note"><span className="live-dot" /> Emergency department discovery</div>
-        <a className="about-link" href="#trust-note">How ERMap works <span aria-hidden="true">↗</span></a>
+        <a className="about-link" href="#trust-note">How ERMap works <span aria-hidden="true">&rarr;</span></a>
       </header>
 
       <section className="workspace" id="home" aria-label="Emergency care discovery">
@@ -231,8 +218,8 @@ export default function Home() {
           <section className="emergency-card" aria-labelledby="emergency-heading">
             <div className="emergency-heading"><span className="emergency-symbol" aria-hidden="true">!</span><div><p className="eyebrow">NEED HELP NOW?</p><h2 id="emergency-heading">Call emergency services</h2></div></div>
             <div className="call-actions">
-              <a href="tel:112"><span>112</span><small>Emergency</small><b aria-hidden="true">↗</b></a>
-              <a href="tel:108"><span>108</span><small>Ambulance</small><b aria-hidden="true">↗</b></a>
+              <a href="tel:112"><span>112</span><small>Emergency</small><b aria-hidden="true">&rarr;</b></a>
+              <a href="tel:108"><span>108</span><small>Ambulance</small><b aria-hidden="true">&rarr;</b></a>
             </div>
             <p className="emergency-note">If someone may be in immediate danger, call first.</p>
           </section>
@@ -247,34 +234,32 @@ export default function Home() {
           </section>
 
           <section className="er-directory" aria-labelledby="directory-heading">
-            <div className="directory-heading-row"><div><p className="eyebrow">PUBLISHED ER INFORMATION</p><h2 id="directory-heading">Emergency departments</h2></div><span className="directory-count">{visibleFacilities.length} of {confirmedERFacilities.length}</span></div>
-            <p className="directory-note">Up to 10 confirmed facilities, arranged by locality{userLocation ? " and straight-line distance" : ""}. Services and availability may change.</p>
-            <button className="view-all-map" type="button" onClick={() => { setSelectedHospital(null); setFitAllRequest((value) => value + 1); }}>View all on map <span aria-hidden="true">↗</span></button>
-            {visibleFacilities.length > 0 && (
-              <FacilityDirectoryList entries={visibleFacilities} selectedFacilityId={selectedHospital?.facilityId} onSelect={(id) => setSelectedHospital(facilityAsMapHospital(id) ?? null)} />
+            <div className="directory-heading-row"><div><p className="eyebrow">PUBLISHED ER INFORMATION</p><h2 id="directory-heading">Emergency hospitals</h2></div><span className="directory-count">{allDirectoryEntries.length} confirmed ER {allDirectoryEntries.length === 1 ? "facility" : "facilities"}</span></div>
+            <p className="directory-note">Confirmed emergency departments, arranged by locality{userLocation ? " and nearest straight-line distance" : ""}. Services and availability may change.</p>
+            <button className="view-all-map" type="button" onClick={() => { setSelectedHospital(null); setFitAllRequest((value) => value + 1); }}>View all on map <span aria-hidden="true">&rarr;</span></button>
+            {pageConfirmed.length > 0 && (
+              <FacilityDirectoryList entries={pageConfirmed} selectedFacilityId={selectedHospital?.facilityId} onSelect={(id) => setSelectedHospital(facilityAsMapHospital(id) ?? null)} />
             )}
-            {visibleFacilities.length === 0 && unconfirmedServiceFacilities.length === 0 && !(ownership !== "Private" && ownership !== "Trust / Charitable" && activeConditions.length === 0) && (
+            {pageConfirmed.length === 0 && pageUnconfirmed.length === 0 && (
               <div className="directory-empty" role="status"><strong>No confirmed ER facilities match these filters.</strong><span>Remove a filter to see the available published ER information.</span></div>
             )}
-            {activeConditions.length > 0 && (unconfirmedServiceFacilities.length > 0 || (ownership !== "Private" && ownership !== "Trust / Charitable")) && (
+            {activeConditions.length > 0 && pageUnconfirmed.length > 0 && (
               <section className="service-unconfirmed-group" aria-labelledby="service-unconfirmed-heading">
                 <h3 id="service-unconfirmed-heading">Service not published: call to confirm</h3>
                 <p>These facilities do not have published information for every selected service. Their capabilities are not confirmed.</p>
-                {unconfirmedServiceFacilities.length > 0 && (
-                  <FacilityDirectoryList entries={unconfirmedServiceFacilities} selectedFacilityId={selectedHospital?.facilityId} onSelect={(id) => setSelectedHospital(facilityAsMapHospital(id) ?? null)} />
-                )}
-                {ownership !== "Private" && ownership !== "Trust / Charitable" && publicHospitalContacts.map((contact) => <PublicHospitalContactCard contact={contact} key={contact.id} />)}
+                <FacilityDirectoryList entries={pageUnconfirmed} selectedFacilityId={selectedHospital?.facilityId} onSelect={(id) => setSelectedHospital(facilityAsMapHospital(id) ?? null)} />
               </section>
             )}
-            {ownership !== "Private" && ownership !== "Trust / Charitable" && activeConditions.length === 0 && publicHospitalContacts.map((contact) => <PublicHospitalContactCard contact={contact} key={contact.id} />)}
-            <p className="directory-data-note">Map-provider hospital results are not ERMap records. Government hospital contacts shown separately are not confirmed ER facilities and have no ER map pin until emergency services are source-confirmed.</p>
+            {allDirectoryEntries.length > 6 && <button className="view-all-hospitals" type="button" onClick={() => { setShowAllHospitals((show) => !show); setDirectoryPage(0); }}>{showAllHospitals ? "Show first 6 hospitals" : "View all emergency hospitals"}</button>}
+            {showAllHospitals && pageCount > 1 && <nav className="directory-pagination" aria-label="Emergency hospital pages"><button type="button" disabled={currentPage === 0} onClick={() => setDirectoryPage(currentPage - 1)}>Previous</button><span>Page {currentPage + 1} of {pageCount}</span><button type="button" disabled={currentPage >= pageCount - 1} onClick={() => setDirectoryPage(currentPage + 1)}>Next</button></nav>}
+            <p className="directory-data-note">Only facilities with published emergency-care evidence appear here. Map-provider hospital results remain unverified and are not ERMap facility records.</p>
           </section>
 
-          <div className="trust-note" id="trust-note"><span aria-hidden="true">✳</span><p><strong>Information, not medical advice.</strong><br />Call the hospital to confirm emergency services and current availability before travelling.</p></div>
+          <div className="trust-note" id="trust-note"><span aria-hidden="true">\u2733</span><p><strong>Information, not medical advice.</strong><br />Call the hospital to confirm emergency services and current availability before travelling.</p></div>
         </aside>
       </section>
 
-      <footer className="page-footer"><span>ERMap <span className="footer-dot">·</span> Emergency care, with clarity.</span><a className="report-error-link" href="mailto:replace-me@example.com?subject=ERMap%20error%20report">Report an error</a><span>In an emergency, call <strong>112</strong> or <strong>108</strong> first.</span></footer>
+      <footer className="page-footer"><span>ERMap <span className="footer-dot">&middot;</span> Emergency care, with clarity.</span><a className="report-error-link" href="mailto:replace-me@example.com?subject=ERMap%20error%20report">Report an error</a><span>In an emergency, call <strong>112</strong> or <strong>108</strong> first.</span></footer>
     </main>
   );
 }

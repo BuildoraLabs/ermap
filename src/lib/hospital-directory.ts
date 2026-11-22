@@ -21,17 +21,18 @@ export type HospitalEnrichment = {
   hospitalName: VerifiedValue<string>;
   locality: VerifiedValue<string>;
   address: VerifiedValue<string>;
-  officialWebsite: VerifiedValue<string>;
-  erAvailability: VerifiedValue<boolean>;
-  emergency24x7: VerifiedValue<boolean>;
+  officialWebsite?: VerifiedValue<string>;
+  erAvailability?: VerifiedValue<boolean>;
+  emergency24x7?: VerifiedValue<boolean>;
   generalPhone?: VerifiedValue<string>;
   emergencyPhone?: VerifiedValue<string>;
   ownership?: VerifiedValue<OwnershipCategory>;
   emergencyDetails?: Partial<Record<EmergencyCapability, VerifiedValue<boolean>>>;
   erHoldingBeds?: VerifiedValue<number>;
+  emergencyScopeNote?: VerifiedValue<string>;
 };
 
-export type ConfirmedERFacility = {
+export type HospitalFacilityRecord = {
   id: string;
   aliases: string[];
   mapLocation: [longitude: number, latitude: number];
@@ -40,6 +41,8 @@ export type ConfirmedERFacility = {
   matchRadiusMeters: number;
   data: HospitalEnrichment;
 };
+
+export type ConfirmedERFacility = HospitalFacilityRecord;
 
 const recordVerificationDates: Record<string, string> = {
   "aster-cmi-hebbal": "2026-11-22",
@@ -69,7 +72,7 @@ const manipalYelahankaEmergency = "https://www.manipalhospitals.com/yelahanka/sp
 
 // Records are curated from published official sources. Coordinates are used only
 // for map placement and exact branch matching; the map source does not establish ER status.
-export const confirmedERFacilities: ConfirmedERFacility[] = [
+const initialERFacilities: ConfirmedERFacility[] = [
   {
     id: "aster-cmi-hebbal",
     aliases: ["aster cmi hospital", "aster cmi", "aster cmi bangalore"],
@@ -244,24 +247,88 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
   }
 ];
 
-// Government hospital contact published in the Government of India's ORS
-// directory. It is listed separately because the available source does not
-// confirm emergency department hours or services, so it must not receive an ER pin.
-export const publicHospitalContacts = [
+const sparshYelahanka = "https://www.sparshhospital.com/hospitals/sparsh-hospital-yelahanka/";
+const sparshEmergencyDisclosure = "https://www.sparshhospital.com/wp-content/uploads/2026/08/mandatory-disclosure-form.pdf";
+const valensContact = "https://www.valenshospital.com/contact.php";
+
+// Additional North Bengaluru facilities included only where an official source
+// explicitly describes round-the-clock emergency care/assessment.
+const additionalERFacilities: ConfirmedERFacility[] = [
   {
-    id: "general-hospital-yelahanka",
-    name: "General Hospital Yelahanka",
-    locality: "Old Town Yelahanka, Bengaluru North",
-    address: "General Hospital Yelahanka, Old Town, Yelahanka, Bengaluru North 560064",
+    id: "sparsh-yelahanka",
+    aliases: ["sparsh hospital yelahanka", "sparsh yelahanka", "sparsh hospital"],
+    mapLocation: [77.59865, 13.09497],
+    mapLocationSourceUrl: "https://www.openstreetmap.org/?mlat=13.09497&mlon=77.59865#map=17/13.09497/77.59865",
+    localityOrder: 3,
+    matchRadiusMeters: 300,
+    data: (() => {
+      const verified = <T,>(value: T, ...sources: string[]) => verifiedAt("2026-11-22", value, ...sources);
+      return {
+        hospitalName: verified("SPARSH Hospital, Yelahanka", sparshYelahanka),
+        locality: verified("Yelahanka, Bengaluru", sparshYelahanka),
+        address: verified("No. 1474/138, International Airport Road, Kogilu Cross, Yelahanka, Bengaluru 560064", sparshYelahanka),
+        officialWebsite: verified("https://www.sparshhospital.com/", "https://www.sparshhospital.com/"),
+        erAvailability: verified(true, sparshEmergencyDisclosure, "https://www.sparshhospital.com/specialities/emergency-medicine/"),
+        emergency24x7: verified(true, sparshEmergencyDisclosure, "https://www.sparshhospital.com/specialities/emergency-medicine/"),
+        generalPhone: verified("08065918375", sparshYelahanka),
+        emergencyDetails: {},
+        lastVerified: "2026-11-22"
+      };
+    })()
+  },
+  {
+    id: "valens-yelahanka",
+    aliases: ["valens hospital", "valens hospitals", "valens hospital yelahanka"],
+    mapLocation: [77.61761, 13.12098],
+    mapLocationSourceUrl: "https://www.openstreetmap.org/?mlat=13.12098&mlon=77.61761#map=17/13.12098/77.61761",
+    localityOrder: 3,
+    matchRadiusMeters: 300,
+    data: (() => {
+      const verified = <T,>(value: T, ...sources: string[]) => verifiedAt("2026-11-22", value, ...sources);
+      return {
+        hospitalName: verified("Valens Hospital", valensContact),
+        locality: verified("Yelahanka, Bengaluru", valensContact),
+        address: verified("#33-34, Bagalur Main Road, Opposite Dinespot Hotel, New Dwarakanagar Extension, Yelahanka, Bengaluru 560064", valensContact),
+        officialWebsite: verified("https://www.valenshospital.com/", "https://www.valenshospital.com/"),
+        erAvailability: verified(true, valensContact),
+        emergency24x7: verified(true, valensContact),
+        generalPhone: verified("080 4866 1111", valensContact),
+        emergencyPhone: verified("080 4866 1111", valensContact),
+        emergencyDetails: {},
+        lastVerified: "2026-11-22"
+      };
+    })()
+  },
+];
+
+const governmentFacilitySource = "https://kla.kar.nic.in/council/Replies/unstarred/10032025/usq482%2810032025%29.pdf";
+const governmentPhoneSource = "https://ors.nic.in/nodal_officer_list.html";
+const generalHospitalYelahanka: HospitalFacilityRecord = {
+  id: "general-hospital-yelahanka",
+  aliases: ["general hospital yelahanka", "yelahanka government hospital", "government hospital yelahanka"],
+  mapLocation: [77.596216, 13.0997582],
+  mapLocationSourceUrl: "https://www.openstreetmap.org/?mlat=13.0997582&mlon=77.596216#map=17/13.0997582/77.596216",
+  localityOrder: 3,
+  matchRadiusMeters: 250,
+  data: {
+    hospitalName: verifiedAt(recordVerificationDates["general-hospital-yelahanka"], "General Hospital Yelahanka", governmentFacilitySource),
+    locality: verifiedAt(recordVerificationDates["general-hospital-yelahanka"], "Old Town Yelahanka, Bengaluru North", governmentFacilitySource),
+    address: verifiedAt(recordVerificationDates["general-hospital-yelahanka"], "General Hospital Yelahanka, Old Town, Yelahanka, Bengaluru North 560064", governmentFacilitySource),
     // TODO(owner): Confirm this number by calling the hospital; retain the sourced digits until confirmed.
-    phone: "0802-8563885",
-    ownership: "government" as const,
-    emergencyStatus: "Emergency department hours and services: call to confirm",
-    phoneSource: "https://ors.nic.in/nodal_officer_list.html",
-    facilitySource: "https://kla.kar.nic.in/council/Replies/unstarred/10032025/usq482%2810032025%29.pdf",
+    generalPhone: verifiedAt(recordVerificationDates["general-hospital-yelahanka"], "0802-8563885", governmentPhoneSource),
+    ownership: verifiedAt(recordVerificationDates["general-hospital-yelahanka"], "government", governmentFacilitySource),
+    emergencyDetails: {},
     lastVerified: recordVerificationDates["general-hospital-yelahanka"]
   }
-];
+};
+
+// This is the single maintained facility source. Unconfirmed records remain
+// searchable/detail-only; only sourced ER records are derived for list and pins.
+export const hospitalRecords: HospitalFacilityRecord[] = [...initialERFacilities, ...additionalERFacilities, generalHospitalYelahanka];
+export const confirmedERFacilities: ConfirmedERFacility[] = hospitalRecords.filter(
+  (facility): facility is ConfirmedERFacility => facility.data.erAvailability?.value === true
+);
+export const allConfirmedERFacilities = confirmedERFacilities;
 
 function normalizeName(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -282,7 +349,14 @@ export function findConfirmedERFacility(name: string, coordinates: [number, numb
   );
 }
 
+export function findHospitalRecord(name: string, coordinates: [number, number]) {
+  const normalizedName = normalizeName(name);
+  return hospitalRecords.find(({ aliases, mapLocation, matchRadiusMeters }) =>
+    aliases.some((alias) => normalizeName(alias) === normalizedName)
+    && distanceMeters(coordinates, mapLocation) <= matchRadiusMeters
+  );
+}
+
 export function findHospitalEnrichment(name: string, coordinates: [number, number]) {
-  const facility = findConfirmedERFacility(name, coordinates);
-  return facility?.data.erAvailability.value === true ? facility.data : undefined;
+  return findHospitalRecord(name, coordinates)?.data;
 }

@@ -109,7 +109,7 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
             <strong>{erStatus === "confirmed" ? "CONFIRMED ER" : "ER availability not confirmed"}</strong>
             {erStatus === "confirmed" && erAvailability && <SourceAndDate item={erAvailability} />}
           </div>
-          {distance !== undefined && <p className="facility-distance">{distance < 1000 ? `${Math.round(distance / 10) * 10} m` : `${(distance / 1000).toFixed(1)} km`} straight-line distance from your location</p>}
+          {distance !== undefined && <p className="facility-distance">{(distance / 1000).toFixed(1)} km straight-line distance from your location</p>}
           {ownership && (
             <>
               <div className={`ownership-badge ownership-${ownership.value}`}><strong>{ownershipLabels[ownership.value]}</strong></div>
@@ -121,6 +121,16 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
       </div>
 
       <section className="contact-priority" aria-label="Hospital contact numbers">
+        {emergencyPhone ? (
+          <div className="phone-row phone-emergency">
+            <div>
+              <strong className="phone-label">Emergency department phone</strong>
+              <a className="hospital-phone-number" href={`tel:${phoneHref(emergencyPhone.value)}`}>{formatPhoneDisplay(emergencyPhone.value)}</a>
+              <SourceAndDate item={emergencyPhone} />
+            </div>
+            <CallAction phone={emergencyPhone.value} label="Call emergency department" />
+          </div>
+        ) : null}
         {generalPhone ? (
           <div className="phone-row phone-general">
             <div>
@@ -132,16 +142,7 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
             <CallAction phone={generalPhone.value} label="Call hospital" />
           </div>
         ) : <p className="section-empty phone-unavailable">General hospital contact: Information unavailable.</p>}
-        {emergencyPhone ? (
-          <div className="phone-row phone-emergency">
-            <div>
-              <strong className="phone-label">Emergency department phone</strong>
-              <a className="hospital-phone-number" href={`tel:${phoneHref(emergencyPhone.value)}`}>{formatPhoneDisplay(emergencyPhone.value)}</a>
-              <SourceAndDate item={emergencyPhone} />
-            </div>
-            <CallAction phone={emergencyPhone.value} label="Call emergency department" />
-          </div>
-        ) : <p className="emergency-number-unavailable">No separate emergency department number published.</p>}
+        {!emergencyPhone && !generalPhone && <p className="emergency-number-unavailable">No separate emergency department number published.</p>}
       </section>
 
       {address && (
@@ -168,6 +169,7 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
         </div>
         <div className="emergency-facts">
         <div className="emergency-hours-row"><span>24/7 emergency department</span>{hasSourcedValue(enrichment?.emergency24x7) && enrichment.emergency24x7.value ? <strong className="fact-yes">Published as 24/7</strong> : <strong className="fact-confirm">Call to confirm</strong>}{hasSourcedValue(enrichment?.emergency24x7) && <SourceAndDate item={enrichment.emergency24x7} />}</div>
+        {hasSourcedValue(enrichment?.emergencyScopeNote) && <p className="emergency-scope-note">{enrichment.emergencyScopeNote.value} <SourceAndDate item={enrichment.emergencyScopeNote} /></p>}
         {emergencyFields.filter((field) => field !== "24/7 emergency department").map((field) => {
             const fieldValue = enrichment?.emergencyDetails?.[field];
             const capability = hasSourcedValue(fieldValue) ? fieldValue : undefined;

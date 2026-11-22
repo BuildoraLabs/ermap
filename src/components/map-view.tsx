@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { type Map as MapLibreMap } from "maplibre-gl";
 import type { SearchLocation } from "@/components/location-search";
-import { confirmedERFacilities, findConfirmedERFacility, type HospitalEnrichment } from "@/lib/hospital-directory";
+import { confirmedERFacilities, findHospitalRecord, type HospitalEnrichment } from "@/lib/hospital-directory";
 
 export type MapHospital = {
   name: string;
@@ -146,6 +146,7 @@ export default function MapView({ onHospitalSelect, searchLocation, selectedFaci
         : [event.lngLat.lng, event.lngLat.lat];
       const mapCoordinates: [number, number] = [coordinates[0], coordinates[1]];
 
+      const matchedRecord = findHospitalRecord(name, mapCoordinates);
       onHospitalSelectRef.current({
         name,
         locality: ["suburb", "neighbourhood", "neighborhood", "city_district", "district", "city"]
@@ -153,9 +154,9 @@ export default function MapView({ onHospitalSelect, searchLocation, selectedFaci
           .find((value): value is string => typeof value === "string" && value.trim().length > 0),
         longitude: mapCoordinates[0],
         latitude: mapCoordinates[1],
-        erConfirmed: Boolean(findConfirmedERFacility(name, mapCoordinates)),
-        facilityId: findConfirmedERFacility(name, mapCoordinates)?.id,
-        enrichment: findConfirmedERFacility(name, mapCoordinates)?.data
+        erConfirmed: matchedRecord?.data.erAvailability?.value === true,
+        facilityId: matchedRecord?.id,
+        enrichment: matchedRecord?.data
       });
     });
     map.on("mousemove", (event) => {
@@ -210,7 +211,7 @@ export default function MapView({ onHospitalSelect, searchLocation, selectedFaci
       essential: true
     });
     const matched = searchLocation.isHospital
-      ? findConfirmedERFacility(searchLocation.name, [searchLocation.longitude, searchLocation.latitude])
+      ? findHospitalRecord(searchLocation.name, [searchLocation.longitude, searchLocation.latitude])
       : undefined;
     if (searchLocation.isHospital) {
       onHospitalSelectRef.current({
@@ -218,7 +219,7 @@ export default function MapView({ onHospitalSelect, searchLocation, selectedFaci
         locality: matched?.data.locality.value ?? searchLocation.context,
         longitude: searchLocation.longitude,
         latitude: searchLocation.latitude,
-        erConfirmed: Boolean(matched),
+        erConfirmed: matched?.data.erAvailability?.value === true,
         facilityId: matched?.id,
         enrichment: matched?.data
       });

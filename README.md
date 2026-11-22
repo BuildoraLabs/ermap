@@ -1,6 +1,6 @@
 # ERMap - North Bengaluru pilot
 
-A mobile-first information aid for emergency-care facilities and post-surgery care. This repository starts with the project foundation; the emergency, ambulance and after-surgery workflows will be delivered in milestones.
+A mobile-first information aid for discovering published emergency-care facilities in North Bengaluru. Post-surgery and rehabilitation care remain future work.
 
 ## Trust rules
 
@@ -29,6 +29,10 @@ npm run dev
 Open http://localhost:3000.
 
 The app can start without Supabase credentials. ERMap currently uses a curated directory with source notes; Supabase is not connected to the landing page.
+
+## Hospital records
+
+The curated facility records live in `src/lib/hospital-directory.ts`. ER directory entries and map markers are derived only from records whose official or government sources confirm emergency care. Map-provider hospital labels and search results do not establish emergency availability. No `data/sample-hospitals.json` file or sample facility records are present in this checkout; verified records are not sample records.
 
 Configure `NEXT_PUBLIC_MAP_STYLE_URL` in `.env.local` to enable the interactive map. The example file uses OpenFreeMap Liberty (`https://tiles.openfreemap.org/styles/liberty`), which does not require an API key for this initial implementation. If no style URL is configured, ERMap displays a setup message in place of the map. Review the provider's usage terms before increasing traffic.
 
@@ -64,7 +68,7 @@ This is a starter migration, not a substitute for a security review or live data
 ## Current milestone status
 
 - [x] Project scaffold and environment template
-- [x] Emergency-care discovery with an interactive North Bengaluru map
+- [x] Emergency-care discovery with an interactive North Bengaluru map and sourced ER facility records
 - [x] Place and locality search with Care For and ownership filters
 - [x] Hospital detail panel with published contacts, directions and confirmation notes
 - [ ] Configure Supabase (not configured)

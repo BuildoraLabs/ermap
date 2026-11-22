@@ -16,7 +16,7 @@ A mobile-first information aid for emergency-care facilities and post-surgery ca
 
 - Node.js LTS and npm
 - A **new** Supabase project for ERMap (not an existing personal or work project)
-- A map tile provider whose terms and pricing support the intended traffic
+- A MapLibre-compatible map style URL; OpenFreeMap Liberty is used for the initial pilot
 
 ## Local setup
 
@@ -28,7 +28,13 @@ npm run dev
 
 Open http://localhost:3000.
 
-The app can start without Supabase credentials because the first screen uses clearly labelled sample placeholders. Supabase access is only initialized when the client helper is called.
+The app can start without Supabase credentials. The directory remains empty until verified facility data is available; Supabase is not connected to the landing page.
+
+Configure `NEXT_PUBLIC_MAP_STYLE_URL` in `.env.local` to enable the interactive map. The example file uses OpenFreeMap Liberty (`https://tiles.openfreemap.org/styles/liberty`), which does not require an API key for this initial implementation. If no style URL is configured, ERMap displays a setup message in place of the map. Review the provider's usage terms before increasing traffic.
+
+## Place search
+
+Place-name, locality, landmark and address search uses Photon (`photon.komoot.io`) with OpenStreetMap data, limited to the North Bengaluru pilot area. Searches are debounced, limited to six displayed results, and spaced by at least one second per browser session. Search results are map-provider results only and are not ERMap-verified facility records. Photon asks public demo users to keep request volume reasonable, may throttle or block extensive usage, and provides no availability guarantee. Search results display Photon and OpenStreetMap attribution. Review the [Photon demo server terms](https://github.com/komoot/photon#demo-server) before increasing traffic or using this for a wider audience.
 
 ## Supabase setup
 

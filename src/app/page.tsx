@@ -1,58 +1,129 @@
-const sampleHospitals = [
-  { name: "Sample hospital A", status: "Needs confirmation", beds: "Not reported", capability: "Not verified" },
-  { name: "Sample hospital B", status: "Needs confirmation", beds: "Not reported", capability: "Not verified" },
-  { name: "Sample hospital C", status: "Needs confirmation", beds: "Not reported", capability: "Not verified" }
+"use client";
+
+import { useCallback, useState } from "react";
+import HospitalDetailPanel from "@/components/hospital-detail-panel";
+import LocationSearch, { type SearchLocation } from "@/components/location-search";
+import MapView, { type MapHospital } from "@/components/map-view";
+
+const conditions = [
+  { name: "Trauma", icon: "+" },
+  { name: "Cardiac", icon: "♡" },
+  { name: "Stroke", icon: "⌁" },
+  { name: "Neurosurgery", icon: "◉" },
+  { name: "Fall / Injury", icon: "↘", help: "Includes a fall at home" },
+  { name: "Child", icon: "⌣" },
+  { name: "Maternity", icon: "✳" }
 ];
+const ownershipOptions = ["All", "Government", "Private", "Trust / Charitable"];
 
 export default function Home() {
+  const [activeConditions, setActiveConditions] = useState<string[]>([]);
+  const [ownership, setOwnership] = useState("All");
+  const [selectedHospital, setSelectedHospital] = useState<MapHospital | null>(null);
+  const [searchLocation, setSearchLocation] = useState<SearchLocation | null>(null);
+
+  const handleHospitalSelect = useCallback((hospital: MapHospital) => {
+    setSelectedHospital(hospital);
+  }, []);
+
+  const handleSearchSelect = useCallback((location: SearchLocation) => {
+    setSelectedHospital(null);
+    setSearchLocation(location);
+  }, []);
+
+  function toggleCondition(condition: string) {
+    setActiveConditions((current) => current.includes(condition)
+      ? current.filter((item) => item !== condition)
+      : [...current, condition]);
+  }
+
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-5 px-4 py-5 sm:px-6">
-      <header className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">ERMap</h1>
-        <span className="text-sm text-[var(--ermap-muted)]">North Bengaluru pilot</span>
+    <main className="app-shell">
+      <header className="topbar">
+        <a className="brand" href="#home" aria-label="ERMap home">
+          <span className="brand-mark" aria-hidden="true"><span /></span>
+          <span><strong>ERMap</strong><small>NORTH BENGALURU</small></span>
+        </a>
+        <div className="topbar-note"><span className="live-dot" /> A clearer way to find care</div>
+        <a className="about-link" href="#trust-note">How ERMap works <span aria-hidden="true">↗</span></a>
       </header>
 
-      <section aria-labelledby="emergency-title" className="rounded-2xl border border-[var(--ermap-border)] bg-white p-4">
-        <h2 id="emergency-title" className="mb-3 font-semibold">Emergency? Call first.</h2>
-        <div className="grid grid-cols-2 gap-3">
-          <a className="flex min-h-14 items-center justify-center rounded-xl bg-[var(--ermap-red)] px-3 text-lg font-bold text-white" href="tel:112">Call 112</a>
-          <a className="flex min-h-14 items-center justify-center rounded-xl bg-[var(--ermap-red)] px-3 text-lg font-bold text-white" href="tel:108">Call 108</a>
+      <section className="workspace" id="home" aria-label="Emergency care discovery">
+        <div className="map-column">
+          <div className="map-toolbar">
+            <LocationSearch onSelect={handleSearchSelect} />
+            <button className="location-button" type="button" aria-label="Location services are not available yet" title="Location services are not available yet">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5" /><circle cx="12" cy="12" r="2.5" /><path d="M12 2v2m0 16v2M2 12h2m16 0h2" /></svg>
+            </button>
+          </div>
+
+          <div className="filter-row" aria-label="Map filters">
+            <span className="filter-label">CARE FOR</span>
+            {conditions.map((condition) => (
+              <button
+                key={condition.name}
+                type="button"
+                className={`filter-chip ${activeConditions.includes(condition.name) ? "is-active" : ""}`}
+                aria-pressed={activeConditions.includes(condition.name)}
+                aria-label={condition.help ? `${condition.name}: ${condition.help}` : condition.name}
+                title={condition.help}
+                onClick={() => toggleCondition(condition.name)}
+              >
+                <span className={`condition-icon icon-${condition.name.toLowerCase().replace(/[^a-z]+/g, "-")}`} aria-hidden="true">{condition.icon}</span>
+                {condition.name}
+              </button>
+            ))}
+          </div>
+          <p className="filter-disclaimer">Choose care needs to filter verified listings when available. Filters do not confirm a facility offers a service. Fall / Injury includes falls at home.</p>
+
+          <div className="map-frame">
+            <MapView onHospitalSelect={handleHospitalSelect} searchLocation={searchLocation} />
+            <div className="map-area-label"><span className="area-pulse" /> PILOT AREA <span className="area-divider">/</span> NORTH BENGALURU</div>
+          </div>
+          <p className="map-footnote"><span className="info-icon">i</span> Map labels are from OpenFreeMap and are not ERMap-verified facility records.</p>
         </div>
-        <p className="mt-3 text-xs text-[var(--ermap-muted)]">If someone may be in immediate danger, contact emergency services. ERMap is an information aid, not medical advice.</p>
-      </section>
 
-      <section aria-label="Map preview" className="flex min-h-44 items-center justify-center rounded-2xl border border-[var(--ermap-border)] bg-[#E4EAE4] p-4 text-center text-sm text-[var(--ermap-muted)]">
-        Map will appear here after a permitted tile provider is configured. No hospital locations are shown until verified.
-      </section>
+        <aside className="care-panel" aria-label="Emergency actions and directory filters">
+          <div className="panel-heading">
+            <p className="eyebrow">NORTH BENGALURU PILOT</p>
+            <h1>Find care.<br /><em>With clarity.</em></h1>
+            <p className="panel-intro">Explore the area and narrow your search. Facility details will appear here as they are verified.</p>
+          </div>
 
-      <section className="flex flex-wrap gap-2" aria-label="Pilot scope">
-        {["Trauma", "Cardiac", "Stroke", "Child", "Maternity"].map((item) => (
-          <span key={item} className="rounded-full border border-[var(--ermap-border)] bg-white px-4 py-2 text-sm">{item}</span>
-        ))}
-      </section>
-
-      <section className="space-y-3" aria-labelledby="sample-title">
-        <div>
-          <h2 id="sample-title" className="font-semibold">Sample records</h2>
-          <p className="text-xs text-[var(--ermap-muted)]">Illustrative placeholders only. These are not real hospital records.</p>
-        </div>
-        {sampleHospitals.map((hospital) => (
-          <article key={hospital.name} className="rounded-2xl border border-[var(--ermap-border)] bg-white p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h3 className="font-semibold">{hospital.name}</h3>
-              <span className="rounded-full bg-[#FFF1D6] px-3 py-1 text-xs font-semibold text-[var(--ermap-amber)]">{hospital.status}</span>
+          <section className="emergency-card" aria-labelledby="emergency-heading">
+            <div className="emergency-heading"><span className="emergency-symbol" aria-hidden="true">!</span><div><p className="eyebrow">NEED HELP NOW?</p><h2 id="emergency-heading">Call emergency services</h2></div></div>
+            <div className="call-actions">
+              <a href="tel:112"><span>112</span><small>Emergency</small><b aria-hidden="true">↗</b></a>
+              <a href="tel:108"><span>108</span><small>Ambulance</small><b aria-hidden="true">↗</b></a>
             </div>
-            <dl className="mt-3 grid grid-cols-2 gap-3 text-sm">
-              <div><dt className="text-[var(--ermap-muted)]">Capability</dt><dd>{hospital.capability}</dd></div>
-              <div><dt className="text-[var(--ermap-muted)]">ER holding beds</dt><dd>{hospital.beds}</dd></div>
-            </dl>
-          </article>
-        ))}
+            <p className="emergency-note">If someone may be in immediate danger, call first.</p>
+          </section>
+
+          <section className="ownership-section" aria-labelledby="ownership-heading">
+            <div className="section-title-row"><h2 id="ownership-heading">Facility ownership</h2><span>FILTER</span></div>
+            <div className="ownership-options" role="group" aria-label="Filter by facility ownership">
+              {ownershipOptions.map((option) => (
+                <button type="button" key={option} aria-pressed={ownership === option} className={ownership === option ? "selected" : ""} onClick={() => setOwnership(option)}>{option}</button>
+              ))}
+            </div>
+          </section>
+
+          {selectedHospital ? (
+            <HospitalDetailPanel hospital={selectedHospital} onClose={() => setSelectedHospital(null)} />
+          ) : (
+            <section className="results-empty" aria-live="polite">
+              <div className="empty-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 42s14-12.5 14-24a14 14 0 1 0-28 0c0 11.5 14 24 14 24Z" /><circle cx="24" cy="18" r="4.5" /><path d="M18 31h12" /></svg></div>
+              <h2>No ERMap-verified facilities yet</h2>
+              <p>Basemap hospital labels are supplied by OpenFreeMap. ERMap will list verified facility details here when available.</p>
+              <div className="result-count"><span className="result-dot" /> 0 verified facilities <span className="count-separator">·</span> North Bengaluru</div>
+            </section>
+          )}
+
+          <div className="trust-note" id="trust-note"><span aria-hidden="true">✳</span><p><strong>Information, not medical advice.</strong><br />Details can change. Call a facility before travelling.</p></div>
+        </aside>
       </section>
 
-      <footer className="mt-auto border-t border-[var(--ermap-border)] pt-4 text-xs leading-5 text-[var(--ermap-muted)]">
-        ERMap does not show live bed availability or rank hospitals. Details can change; call the facility before travelling. In an emergency, call 112 or 108 first.
-      </footer>
+      <footer className="page-footer"><span>ERMap <span className="footer-dot">·</span> Emergency care, with clarity.</span><span>In an emergency, call <strong>112</strong> or <strong>108</strong> first.</span></footer>
     </main>
   );
 }

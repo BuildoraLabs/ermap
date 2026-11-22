@@ -56,6 +56,7 @@ export default function MapView({ onHospitalSelect, searchLocation, selectedFaci
       const element = marker.getElement();
       element.classList.toggle("er-marker-selected", id === selectedFacilityId);
       element.setAttribute("aria-pressed", String(id === selectedFacilityId));
+      element.style.zIndex = id === selectedFacilityId ? "10" : "1";
     });
   }, [selectedFacilityId]);
 
@@ -81,6 +82,14 @@ export default function MapView({ onHospitalSelect, searchLocation, selectedFaci
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
     map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
+    const updateMarkerLabels = () => {
+      const showAllLabels = map.getZoom() >= 13;
+      markersRef.current.forEach((marker, id) => {
+        const element = marker.getElement();
+        element.classList.toggle("er-map-marker-label-visible", showAllLabels || id === selectedFacilityIdRef.current);
+        element.style.zIndex = id === selectedFacilityIdRef.current ? "10" : "1";
+      });
+    };
     map.on("load", () => {
       confirmedERFacilities.forEach((facility) => {
         const markerElement = document.createElement("button");
@@ -107,7 +116,9 @@ export default function MapView({ onHospitalSelect, searchLocation, selectedFaci
           .setLngLat(facility.mapLocation)
           .addTo(map));
       });
+      updateMarkerLabels();
     });
+    map.on("zoom", updateMarkerLabels);
     map.on("error", (event) => {
       if (event.error) setMapError(true);
     });

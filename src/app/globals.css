@@ -89,7 +89,9 @@ button { font: inherit; }
 .er-map-marker, .er-map-marker.ownership-government, .er-map-marker.ownership-private, .er-map-marker.ownership-trust_charitable, .er-map-marker.ownership-unknown { min-height: 42px; gap: 9px; padding: 5px 13px 5px 5px; border: 1px solid #d9e0db; border-radius: 24px; background: #fff; color: #111b16; box-shadow: 0 3px 13px #183c2e38; }
 .er-map-marker:hover, .er-map-marker.er-marker-selected { background: #fff; box-shadow: 0 5px 17px #183c2e45; }
 .er-map-marker .er-map-marker-icon { width: 30px; height: 30px; flex: 0 0 30px; border-radius: 50%; background: #c72e3c; color: #fff; font-size: 10px; }
-.er-map-marker .er-map-marker-name { max-width: 180px; color: #111b16; font-size: 12px; font-weight: 800; letter-spacing: -.15px; }
+.er-map-marker .er-map-marker-name { display: none; max-width: 180px; color: #111b16; font-size: 12px; font-weight: 800; letter-spacing: -.15px; }
+.er-map-marker:hover, .er-map-marker:focus-visible, .er-map-marker.er-marker-selected { z-index: 20 !important; }
+.er-map-marker:hover .er-map-marker-name, .er-map-marker:focus-visible .er-map-marker-name, .er-map-marker.er-marker-selected .er-map-marker-name, .er-map-marker.er-map-marker-label-visible .er-map-marker-name { display: inline; }
 .user-location-marker { width: 18px; height: 18px; border: 3px solid white; border-radius: 50%; background: #3388db; box-shadow: 0 0 0 6px #3388db38, 0 1px 8px #193c58aa; }
 .map-marker-legend { position: absolute; right: 13px; bottom: 12px; z-index: 2; display: flex; align-items: center; gap: 7px; padding: 6px 9px; border: 1px solid #e4eae4; border-radius: 8px; background: #ffffffed; color: #67766d; font-size: 9px; font-weight: 600; box-shadow: 0 2px 8px #18342814; pointer-events: none; }
 .legend-er { width: 21px; height: 21px; display: grid; place-items: center; border-radius: 50%; background: #c72e3c; color: white; font-size: 8px; font-weight: 900; }

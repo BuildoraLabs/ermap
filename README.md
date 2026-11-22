@@ -28,7 +28,7 @@ npm run dev
 
 Open http://localhost:3000.
 
-The app can start without Supabase credentials. The directory remains empty until verified facility data is available; Supabase is not connected to the landing page.
+The app can start without Supabase credentials. ERMap currently uses a curated directory with source notes; Supabase is not connected to the landing page.
 
 Configure `NEXT_PUBLIC_MAP_STYLE_URL` in `.env.local` to enable the interactive map. The example file uses OpenFreeMap Liberty (`https://tiles.openfreemap.org/styles/liberty`), which does not require an API key for this initial implementation. If no style URL is configured, ERMap displays a setup message in place of the map. Review the provider's usage terms before increasing traffic.
 
@@ -64,11 +64,8 @@ This is a starter migration, not a substitute for a security review or live data
 ## Current milestone status
 
 - [x] Project scaffold and environment template
-- [x] Initial schema revised for safer first application
-- [ ] Create private GitHub repository and push
-- [ ] Create new Supabase project and apply migration
-- [ ] Test migration against a real Supabase project
-- [ ] Build the functional emergency screen and real map
-- [ ] Add verified pilot records
-- [ ] Build ambulance tab
-- [ ] Build after-surgery tab and family-report moderation flow
+- [x] Emergency-care discovery with an interactive North Bengaluru map
+- [x] Place and locality search with Care For and ownership filters
+- [x] Hospital detail panel with published contacts, directions and confirmation notes
+- [ ] Configure Supabase (not configured)
+- [ ] Add rehabilitation and after-surgery care (future milestone)

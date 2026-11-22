@@ -202,6 +202,7 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
       </section>
 
       <p className="provider-disclaimer">Call the hospital to confirm emergency services and current availability before travelling.</p>
+      <a className="report-error-link" href="mailto:replace-me@example.com?subject=ERMap%20error%20report">Report an error</a>
     </section>
   );
 }

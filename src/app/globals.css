@@ -258,6 +258,8 @@ button { font: inherit; }
 .bed-count .detail-source { width: 100%; padding-left: 1px; }
 .bed-separation-note { margin: 7px 1px 0; color: #78857d; font-size: 10px; line-height: 1.45; }
 .provider-disclaimer { margin: 14px 0 0; padding-top: 11px; border-top: 1px solid #edf0ed; color: #6c7b71; font-size: 10px; line-height: 1.5; }
+.report-error-link { color: #28735c; font-size: 10px; font-weight: 700; text-underline-offset: 2px; }
+.hospital-detail > .report-error-link { display: inline-block; margin-top: 8px; }
 .emergency-hours-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 5px 8px; padding: 9px 1px; border-bottom: 1px solid #edf1ed; color: #58675e; font-size: 11px; }
 .emergency-hours-row > strong { font-size: 10px; text-align: right; }
 .emergency-hours-row .detail-source { grid-column: 1 / -1; }

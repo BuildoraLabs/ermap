@@ -274,7 +274,7 @@ export default function Home() {
         </aside>
       </section>
 
-      <footer className="page-footer"><span>ERMap <span className="footer-dot">·</span> Emergency care, with clarity.</span><span>In an emergency, call <strong>112</strong> or <strong>108</strong> first.</span></footer>
+      <footer className="page-footer"><span>ERMap <span className="footer-dot">·</span> Emergency care, with clarity.</span><a className="report-error-link" href="mailto:replace-me@example.com?subject=ERMap%20error%20report">Report an error</a><span>In an emergency, call <strong>112</strong> or <strong>108</strong> first.</span></footer>
     </main>
   );
 }

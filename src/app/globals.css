@@ -137,9 +137,7 @@ button { font: inherit; }
 .facility-card-wrap:hover, .facility-card-wrap.is-selected { border-color: #a9cdbb; background: #f8fbf8; }
 .facility-card-wrap .facility-card { width: auto; min-width: 0; flex: 1; padding: 4px; border: 0; background: transparent; }
 .facility-card-wrap .facility-card:hover, .facility-card-wrap .facility-card.is-selected { border-color: transparent; background: transparent; }
-.facility-er-symbol { width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center; border-radius: 10px; background: #eaf6f0; color: #176b4f; font-size: 11px; font-weight: 900; }
-.facility-er-symbol.ownership-government { background: #edf4fb; color: #315f8c; }
-.facility-er-symbol.ownership-trust_charitable { background: #f3eef9; color: #674a8c; }
+.facility-er-symbol { width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center; border-radius: 10px; background: #c72e3c; color: #fff; font-size: 11px; font-weight: 900; }
 .facility-copy { min-width: 0; display: flex; flex: 1; flex-direction: column; gap: 3px; }
 .facility-copy > strong { overflow: hidden; color: #2b4035; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .facility-copy > small { color: #77857d; font-size: 9px; }

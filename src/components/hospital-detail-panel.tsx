@@ -4,7 +4,7 @@ import type {
   VerifiedValue
 } from "@/lib/hospital-directory";
 import type { MapHospital } from "@/components/map-view";
-import { formatDateDisplay, formatPhoneDisplay, phoneHref } from "@/lib/display-format";
+import { formatDateDisplay, formatPhoneDisplay, isReverificationDue, phoneHref } from "@/lib/display-format";
 
 type HospitalDetailPanelProps = {
   hospital: MapHospital;
@@ -94,7 +94,7 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
     ),
     erBeds?.lastVerified
   ].filter((date): date is string => Boolean(date?.trim()));
-  const lastVerified = verifiedDates
+  const lastVerified = enrichment?.lastVerified ?? verifiedDates
     .sort((left, right) => new Date(right).getTime() - new Date(left).getTime())[0];
 
   return (
@@ -150,7 +150,7 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
           <SourceAndDate item={address} />
         </div>
       )}
-      {lastVerified && <p className="last-verified">Last verified {formatDateDisplay(lastVerified)}</p>}
+      {lastVerified && <p className="last-verified">Last verified {formatDateDisplay(lastVerified)}{isReverificationDue(lastVerified) && <strong className="reverification-due">Re-verification due</strong>}</p>}
 
       <div className="provider-location">
         <div className="provider-location-icon" aria-hidden="true">⌖</div>

@@ -12,7 +12,7 @@ import {
   type EmergencyCapability,
   type OwnershipCategory
 } from "@/lib/hospital-directory";
-import { formatDateDisplay, formatPhoneDisplay, phoneHref } from "@/lib/display-format";
+import { formatDateDisplay, formatPhoneDisplay, isReverificationDue, phoneHref } from "@/lib/display-format";
 
 const conditions = [
   { name: "Trauma", icon: "+", capability: "Trauma" as EmergencyCapability },
@@ -72,7 +72,7 @@ function FacilityDirectoryList({ entries, selectedFacilityId, onSelect }: {
             <div className={`facility-card-wrap ${selected ? "is-selected" : ""}`}>
               <button type="button" className={`facility-card ${selected ? "is-selected" : ""}`} onClick={() => onSelect(facility.id)}>
                 <span className={`facility-er-symbol ownership-${ownershipName ?? "unknown"}`}>ER</span>
-                <span className="facility-copy"><strong>{facility.data.hospitalName.value}</strong><small>{facility.data.locality.value}{distance !== undefined ? ` · ${formatDistance(distance)}` : ""}</small><span className="facility-meta">{ownershipLabel && <em className={`ownership-text ownership-text-${ownershipName}`}>{ownershipLabel}</em>}<em>{facility.data.emergency24x7.value ? "24/7 emergency published" : "Hours: call to confirm"}</em></span></span>
+                <span className="facility-copy"><strong>{facility.data.hospitalName.value}</strong><small>{facility.data.locality.value}{distance !== undefined ? ` · ${formatDistance(distance)}` : ""}</small><span className="facility-meta">{ownershipLabel && <em className={`ownership-text ownership-text-${ownershipName}`}>{ownershipLabel}</em>}<em>{facility.data.emergency24x7.value ? "24/7 emergency published" : "Hours: call to confirm"}</em>{isReverificationDue(facility.data.lastVerified) && <em className="reverification-due">Re-verification due</em>}</span></span>
               </button>
               <span className="facility-phone-area">{phone ? <><span className="facility-phone-number">{formatPhoneDisplay(phone.value)}</span><a className="facility-phone" href={`tel:${phoneHref(phone.value)}`} aria-label={`Call general hospital contact for ${facility.data.hospitalName.value}`}>Call hospital</a></> : <span className="facility-phone-unavailable">Phone unavailable</span>}</span>
             </div>
@@ -100,7 +100,7 @@ function PublicHospitalContactCard({ contact }: { contact: PublicHospitalContact
         <a className="facility-phone" href={`tel:${phoneHref(contact.phone)}`}>Call {formatPhoneDisplay(contact.phone)}</a>
         <a className="public-contact-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contact.address)}`} target="_blank" rel="noreferrer">Directions</a>
       </div>
-      <small>Phone source: <a href={contact.phoneSource} target="_blank" rel="noreferrer">Government of India ORS directory</a> · Facility type and address: <a href={contact.facilitySource} target="_blank" rel="noreferrer">Karnataka Legislative Council</a> · checked {formatDateDisplay(contact.lastVerified)}</small>
+      <small>Phone source: <a href={contact.phoneSource} target="_blank" rel="noreferrer">Government of India ORS directory</a> · Facility type and address: <a href={contact.facilitySource} target="_blank" rel="noreferrer">Karnataka Legislative Council</a> · checked {formatDateDisplay(contact.lastVerified)}{isReverificationDue(contact.lastVerified) ? " · Re-verification due" : ""}</small>
     </section>
   );
 }

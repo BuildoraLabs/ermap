@@ -146,6 +146,7 @@ button { font: inherit; }
 .facility-meta .ownership-text { background: #eaf6f0; color: #246a4e; }
 .facility-meta .ownership-text-government { background: #edf4fb; color: #315f8c; }
 .facility-meta .ownership-text-trust_charitable { background: #f3eef9; color: #674a8c; }
+.facility-meta .reverification-due, .reverification-due { background: #fff1e5; color: #93521a; }
 .facility-phone-area { flex: 0 0 auto; display: flex; align-items: flex-end; flex-direction: column; gap: 4px; }
 .facility-phone-number { color: #64746a; font-size: 8px; font-weight: 600; white-space: nowrap; }
 .facility-phone { display: inline-grid; min-width: 48px; min-height: 33px; place-items: center; border-radius: 8px; background: #087b64; color: #fff; font-size: 10px; font-weight: 700; text-decoration: none; }

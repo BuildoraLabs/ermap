@@ -26,3 +26,8 @@ export function formatDateDisplay(value: string) {
     ? value
     : date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
+
+export function isReverificationDue(lastVerified: string) {
+  const timestamp = Date.parse(`${lastVerified}T00:00:00Z`);
+  return Number.isFinite(timestamp) && Date.now() - timestamp > 90 * 24 * 60 * 60 * 1000;
+}

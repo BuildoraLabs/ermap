@@ -17,6 +17,7 @@ export type VerifiedValue<T> = {
 };
 
 export type HospitalEnrichment = {
+  lastVerified: string;
   hospitalName: VerifiedValue<string>;
   locality: VerifiedValue<string>;
   address: VerifiedValue<string>;
@@ -40,11 +41,20 @@ export type ConfirmedERFacility = {
   data: HospitalEnrichment;
 };
 
-const verifiedOn = "2026-11-22";
-const verified = <T,>(value: T, ...sourceUrls: string[]): VerifiedValue<T> => ({
+const recordVerificationDates: Record<string, string> = {
+  "aster-cmi-hebbal": "2026-11-22",
+  "manipal-hebbal": "2026-11-22",
+  "manipal-yelahanka": "2026-11-22",
+  "bangalore-baptist-hebbal": "2026-11-22",
+  "ramaiah-memorial": "2026-11-22",
+  "regal-hospital-hegde-nagar": "2026-11-22",
+  "general-hospital-yelahanka": "2026-11-22"
+};
+
+const verifiedAt = <T,>(lastVerified: string, value: T, ...sourceUrls: string[]): VerifiedValue<T> => ({
   value,
   sourceUrls,
-  lastVerified: verifiedOn,
+  lastVerified,
   verificationStatus: "verified"
 });
 
@@ -67,7 +77,9 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
     mapLocationSourceUrl: "https://www.openstreetmap.org/?mlat=13.0545578&mlon=77.5916451#map=17/13.0545578/77.5916451",
     localityOrder: 1,
     matchRadiusMeters: 180,
-    data: {
+    data: (() => {
+      const verified = <T,>(value: T, ...sources: string[]) => verifiedAt(recordVerificationDates["aster-cmi-hebbal"], value, ...sources);
+      return {
       hospitalName: verified("Aster CMI Hospital", aster),
       locality: verified("Hebbal, Bengaluru", aster),
       address: verified("No. 43/2, New Airport Road, NH 44, Sahakar Nagar, Hebbal, Bengaluru, Karnataka 560092", aster),
@@ -83,8 +95,10 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
         Stroke: verified(true, "https://www.asterhospitals.in/hospitals/aster-cmi-bangalore/specialities/emergency-medicine/services/department-of-emergency-medicine-services?page=1"),
         Orthopaedic: verified(true, "https://www.asterhospitals.in/hospitals/aster-cmi-bangalore/specialities/emergency-medicine/services/department-of-emergency-medicine-services?page=1"),
         "Child / Paediatric emergency care": verified(true, "https://www.asterhospitals.in/hospitals/aster-cmi-bangalore/specialities/emergency-medicine"),
-      }
-    }
+      },
+      lastVerified: recordVerificationDates["aster-cmi-hebbal"]
+      };
+    })()
   },
   {
     id: "manipal-hebbal",
@@ -93,7 +107,9 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
     mapLocationSourceUrl: "https://www.openstreetmap.org/?mlat=13.0509624&mlon=77.5938660#map=17/13.0509624/77.5938660",
     localityOrder: 1,
     matchRadiusMeters: 140,
-    data: {
+    data: (() => {
+      const verified = <T,>(value: T, ...sources: string[]) => verifiedAt(recordVerificationDates["manipal-hebbal"], value, ...sources);
+      return {
       hospitalName: verified("Manipal Hospital Hebbal", "https://www.manipalhospitals.com/hebbal/"),
       locality: verified("Hebbal, Bengaluru", "https://www.manipalhospitals.com/hebbal/contact-us/"),
       address: verified("Kirloskar Business Park, Bellary Road, Hebbal, Bengaluru, Karnataka 560024", "https://www.manipalhospitals.com/hebbal/contact-us/"),
@@ -110,8 +126,10 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
         Orthopaedic: verified(true, "https://www.manipalhospitals.com/hebbal/specialities/accident-and-emergency-care/accident-and-emergency/"),
         "Child / Paediatric emergency care": verified(true, "https://www.manipalhospitals.com/hebbal/specialities/accident-and-emergency-care/accident-and-emergency/"),
         "Maternity emergency care": verified(true, "https://www.manipalhospitals.com/hebbal/specialities/accident-and-emergency-care/accident-and-emergency/")
-      }
-    }
+      },
+      lastVerified: recordVerificationDates["manipal-hebbal"]
+      };
+    })()
   },
   {
     id: "manipal-yelahanka",
@@ -120,7 +138,9 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
     mapLocationSourceUrl: "https://www.openstreetmap.org/?mlat=13.107448&mlon=77.6033446#map=17/13.107448/77.6033446",
     localityOrder: 3,
     matchRadiusMeters: 220,
-    data: {
+    data: (() => {
+      const verified = <T,>(value: T, ...sources: string[]) => verifiedAt(recordVerificationDates["manipal-yelahanka"], value, ...sources);
+      return {
       hospitalName: verified("Manipal Hospital Yelahanka", manipalYelahanka),
       locality: verified("Venkatala, Yelahanka, Bengaluru", manipalYelahanka),
       address: verified("Sy No 23/3, Next to Brigade Honda Showroom, Venkatala Village, Yelahanka Hobli, Bengaluru North Taluk, Bengaluru 560064", manipalYelahanka),
@@ -135,8 +155,10 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
         Stroke: verified(true, manipalYelahankaEmergency),
         Orthopaedic: verified(true, manipalYelahankaEmergency),
         "Child / Paediatric emergency care": verified(true, manipalYelahankaEmergency)
-      }
-    }
+      },
+      lastVerified: recordVerificationDates["manipal-yelahanka"]
+      };
+    })()
   },
   {
     id: "bangalore-baptist-hebbal",
@@ -145,7 +167,9 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
     mapLocationSourceUrl: "https://www.openstreetmap.org/?mlat=13.0346791&mlon=77.591043#map=17/13.0346791/77.591043",
     localityOrder: 1,
     matchRadiusMeters: 260,
-    data: {
+    data: (() => {
+      const verified = <T,>(value: T, ...sources: string[]) => verifiedAt(recordVerificationDates["bangalore-baptist-hebbal"], value, ...sources);
+      return {
       hospitalName: verified("Bangalore Baptist Hospital", baptistContact),
       locality: verified("Hebbal, Bengaluru", baptistContact),
       address: verified("Bellary Road, Hebbal, Bengaluru, Karnataka 560024", baptistContact),
@@ -155,8 +179,10 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
       generalPhone: verified("080-22024700", baptistContact),
       emergencyPhone: verified("8880408040", "https://bbh.org.in/patients/"),
       ownership: verified("trust_charitable", "https://bbh.org.in/about/"),
-      emergencyDetails: {}
-    }
+      emergencyDetails: {},
+      lastVerified: recordVerificationDates["bangalore-baptist-hebbal"]
+      };
+    })()
   },
   {
     id: "ramaiah-memorial",
@@ -165,7 +191,9 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
     mapLocationSourceUrl: "https://www.openstreetmap.org/?mlat=13.0282201&mlon=77.5697318#map=17/13.0282201/77.5697318",
     localityOrder: 4,
     matchRadiusMeters: 240,
-    data: {
+    data: (() => {
+      const verified = <T,>(value: T, ...sources: string[]) => verifiedAt(recordVerificationDates["ramaiah-memorial"], value, ...sources);
+      return {
       hospitalName: verified("Ramaiah Memorial Hospital", ramaiahContact),
       locality: verified("MS Ramaiah Nagar, Bengaluru", ramaiahContact),
       address: verified("New BEL Road, M S Ramaiah Nagar, Bengaluru, Karnataka 560054", ramaiahContact),
@@ -181,8 +209,10 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
         Stroke: verified(true, ramaiahEmergency),
         "Child / Paediatric emergency care": verified(true, ramaiahEmergency),
         "Maternity emergency care": verified(true, ramaiahEmergency)
-      }
-    }
+      },
+      lastVerified: recordVerificationDates["ramaiah-memorial"]
+      };
+    })()
   },
   {
     id: "regal-hospital-hegde-nagar",
@@ -191,7 +221,9 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
     mapLocationSourceUrl: "https://www.openstreetmap.org/?mlat=13.0830463&mlon=77.6347174#map=17/13.0830463/77.6347174",
     localityOrder: 2,
     matchRadiusMeters: 220,
-    data: {
+    data: (() => {
+      const verified = <T,>(value: T, ...sources: string[]) => verifiedAt(recordVerificationDates["regal-hospital-hegde-nagar"], value, ...sources);
+      return {
       hospitalName: verified("Regal Hospital", "https://regalhospital.com/contact-us/"),
       locality: verified("Hegde Nagar, North Bengaluru", "https://regalhospital.com/contact-us/"),
       address: verified("No. 30, CMR Complex, Chokkanahalli Hegdenagar Main Road, Devin Paradise Enclave, Tirumanahalli, Bengaluru, Karnataka 560064", "https://regalhospital.com/contact-us/"),
@@ -205,8 +237,10 @@ export const confirmedERFacilities: ConfirmedERFacility[] = [
         Trauma: verified(true, "https://regalhospital.com/accident-and-emergency/"),
         Cardiac: verified(true, "https://regalhospital.com/best-cardiology-hospital-bangalore/"),
         Stroke: verified(true, "https://regalhospital.com/accident-and-emergency/")
-      }
-    }
+      },
+      lastVerified: recordVerificationDates["regal-hospital-hegde-nagar"]
+      };
+    })()
   }
 ];
 
@@ -225,7 +259,7 @@ export const publicHospitalContacts = [
     emergencyStatus: "Emergency department hours and services: call to confirm",
     phoneSource: "https://ors.nic.in/nodal_officer_list.html",
     facilitySource: "https://kla.kar.nic.in/council/Replies/unstarred/10032025/usq482%2810032025%29.pdf",
-    lastVerified: verifiedOn
+    lastVerified: recordVerificationDates["general-hospital-yelahanka"]
   }
 ];
 

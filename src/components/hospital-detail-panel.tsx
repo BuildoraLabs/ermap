@@ -31,11 +31,26 @@ const emergencyFields: EmergencyCapability[] = [
 function hasSourcedValue<T>(item: VerifiedValue<T> | undefined): item is VerifiedValue<T> {
   return Boolean(
     item
+    && typeof item === "object"
     && item.verificationStatus === "verified"
+    && typeof item.lastVerified === "string"
     && item.lastVerified.trim()
+    && Number.isFinite(Date.parse(`${item.lastVerified}T00:00:00Z`))
+    && hasDisplayValue(item.value)
+    && Array.isArray(item.sourceUrls)
     && item.sourceUrls.length > 0
-    && item.sourceUrls.every((url) => url.startsWith("https://"))
+    && item.sourceUrls.every((url) => typeof url === "string" && url.startsWith("https://"))
   );
+}
+
+function hasDisplayValue(value: unknown): boolean {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") {
+    const normalized = value.trim();
+    return normalized.length > 0 && !/^(unavailable|not available)$/i.test(normalized);
+  }
+  if (typeof value === "number") return Number.isFinite(value);
+  return true;
 }
 
 function SourceAndDate<T>({ item }: { item: VerifiedValue<T> }) {
@@ -47,7 +62,7 @@ function SourceAndDate<T>({ item }: { item: VerifiedValue<T> }) {
           <a href={url} target="_blank" rel="noreferrer">{item.sourceUrls.length > 1 ? `Published source ${index + 1}` : "Published source"}</a>
         </span>
       ))}
-      {" · verified "}{formatDateDisplay(item.lastVerified)}
+      {" · verified "}{formatDateDisplay(item.lastVerified)}{isReverificationDue(item.lastVerified) ? " · Re-verification due" : ""}
     </small>
   );
 }
@@ -66,6 +81,7 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
     : undefined;
   const erStatus = hospital.erConfirmed && erAvailability ? "confirmed" : "not-confirmed";
   const officialName = hasSourcedValue(enrichment?.hospitalName) ? enrichment.hospitalName : undefined;
+  const displayName = officialName?.value ?? (hasDisplayValue(hospital.name) ? hospital.name : undefined);
   const locality = hasSourcedValue(enrichment?.locality) ? enrichment.locality : undefined;
   const address = hasSourcedValue(enrichment?.address) ? enrichment.address : undefined;
   const generalPhone = hasSourcedValue(enrichment?.generalPhone) ? enrichment.generalPhone : undefined;
@@ -77,39 +93,31 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
     ? enrichment.erHoldingBeds
     : undefined;
   const hasLocation = Number.isFinite(hospital.longitude) && Number.isFinite(hospital.latitude);
+  const displayLocality = locality?.value ?? (hasDisplayValue(hospital.locality) ? hospital.locality : undefined);
+  const manipalCentralHelpline = generalPhone?.value.replace(/\D/g, "") === "18001025555"
+    && officialName?.value.startsWith("Manipal Hospital");
+  const manipalBranch = hospital.facilityId === "manipal-hebbal" ? "Hebbal" : "Yelahanka";
+  const emergency24x7 = hasSourcedValue(enrichment?.emergency24x7) ? enrichment.emergency24x7 : undefined;
+  const emergencyCapabilities = emergencyFields
+    .filter((field) => field !== "24/7 emergency department")
+    .flatMap((field) => {
+      const capability = enrichment?.emergencyDetails?.[field];
+      return hasSourcedValue(capability) ? [{ field, capability }] : [];
+    });
+  const emergencyScopeNote = hasSourcedValue(enrichment?.emergencyScopeNote) ? enrichment.emergencyScopeNote : undefined;
   const directionsUrl = hasLocation
     ? `https://www.google.com/maps/dir/?api=1&destination=${hospital.latitude},${hospital.longitude}`
     : undefined;
-  const verifiedDates = [
-    enrichment?.erAvailability?.lastVerified,
-    enrichment?.emergency24x7?.lastVerified,
-    officialName?.lastVerified,
-    locality?.lastVerified,
-    address?.lastVerified,
-    generalPhone?.lastVerified,
-    emergencyPhone?.lastVerified,
-    ownership?.lastVerified,
-    ...Object.values(enrichment?.emergencyDetails ?? {}).flatMap((item) =>
-      hasSourcedValue(item) ? [item.lastVerified] : []
-    ),
-    erBeds?.lastVerified
-  ].filter((date): date is string => Boolean(date?.trim()));
-  const lastVerified = enrichment?.lastVerified ?? verifiedDates
-    .sort((left, right) => new Date(right).getTime() - new Date(left).getTime())[0];
 
   return (
-    <section className="hospital-detail" aria-labelledby="hospital-detail-title">
+    <section className="hospital-detail" aria-label="Hospital details">
       <div className="detail-header">
         <div className="detail-title-wrap">
-          <p className="detail-provider-label">{erStatus === "confirmed" ? "ERMAP PUBLISHED RECORD" : "MAP-PROVIDER INFORMATION"}</p>
-          <h2 id="hospital-detail-title">{officialName?.value ?? hospital.name}</h2>
-          {officialName && officialName.value !== hospital.name && <p className="map-provider-name">Map label: {hospital.name}</p>}
-          <p className="hospital-locality">{locality?.value ?? hospital.locality ?? "Locality unavailable"}</p>
-          <div className={`er-status-badge er-status-${erStatus}`}>
-            <strong>{erStatus === "confirmed" ? "CONFIRMED ER" : "ER availability not confirmed"}</strong>
-            {erStatus === "confirmed" && erAvailability && <SourceAndDate item={erAvailability} />}
-          </div>
-          {distance !== undefined && <p className="facility-distance">{(distance / 1000).toFixed(1)} km straight-line distance from your location</p>}
+          <p className="detail-provider-label">{erStatus === "confirmed" ? "ERMAP PUBLISHED RECORD" : "MAP-PROVIDER RESULT · ER AVAILABILITY NOT CONFIRMED"}</p>
+          {displayName && <h2 id="hospital-detail-title">{displayName}</h2>}
+          {officialName && hasDisplayValue(hospital.name) && officialName.value !== hospital.name && <p className="map-provider-name">Map label: {hospital.name}</p>}
+          {displayLocality && <p className="hospital-locality">{displayLocality}</p>}
+          {distance !== undefined && Number.isFinite(distance) && distance >= 0 && <p className="facility-distance">{(distance / 1000).toFixed(1)} km straight-line distance from your location</p>}
           {ownership && (
             <>
               <div className={`ownership-badge ownership-${ownership.value}`}><strong>{ownershipLabels[ownership.value]}</strong></div>
@@ -120,7 +128,7 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
         <button className="detail-close" type="button" onClick={onClose} aria-label="Close hospital details">×</button>
       </div>
 
-      <section className="contact-priority" aria-label="Hospital contact numbers">
+      {(emergencyPhone || generalPhone) && <section className="contact-priority" aria-label="Hospital contact numbers">
         {emergencyPhone ? (
           <div className="phone-row phone-emergency">
             <div>
@@ -134,16 +142,15 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
         {generalPhone ? (
           <div className="phone-row phone-general">
             <div>
-              <strong className="phone-label">General hospital contact</strong>
+              <strong className="phone-label">{manipalCentralHelpline ? "Manipal Hospitals central helpline (shared)" : "General hospital contact"}</strong>
               <a className="hospital-phone-number" href={`tel:${phoneHref(generalPhone.value)}`}>{formatPhoneDisplay(generalPhone.value)}</a>
               <SourceAndDate item={generalPhone} />
-              <small className="phone-routing-note">Published contact number; hours are not implied. {emergencyPhone ? "" : "Ask to be connected to casualty / emergency."}</small>
+              <small className="phone-routing-note">{manipalCentralHelpline ? `Shared helpline; ask for the ${manipalBranch} branch.` : `Published contact number; hours are not implied.${emergencyPhone ? "" : " Ask to be connected to casualty / emergency."}`}</small>
             </div>
             <CallAction phone={generalPhone.value} label="Call hospital" />
           </div>
-        ) : <p className="section-empty phone-unavailable">General hospital contact: Information unavailable.</p>}
-        {!emergencyPhone && !generalPhone && <p className="emergency-number-unavailable">No separate emergency department number published.</p>}
-      </section>
+        ) : null}
+      </section>}
 
       {address && (
         <div className="official-address">
@@ -151,60 +158,48 @@ export default function HospitalDetailPanel({ hospital, distance, onClose }: Hos
           <SourceAndDate item={address} />
         </div>
       )}
-      {lastVerified && <p className="last-verified">Last verified {formatDateDisplay(lastVerified)}{isReverificationDue(lastVerified) && <strong className="reverification-due">Re-verification due</strong>}</p>}
 
-      <div className="provider-location">
+      {hasLocation && <div className="provider-location">
         <div className="provider-location-icon" aria-hidden="true">⌖</div>
         <div className="provider-location-copy">
           <strong>Map location</strong>
-          <span>OpenFreeMap · {hospital.latitude.toFixed(5)}, {hospital.longitude.toFixed(5)}</span>
+          <span>Coordinates · {hospital.latitude.toFixed(5)}, {hospital.longitude.toFixed(5)}</span>
         </div>
         {directionsUrl && <a className="directions-action" href={directionsUrl} target="_blank" rel="noreferrer">Directions <span aria-hidden="true">↗</span></a>}
-      </div>
+      </div>}
 
-      <section className="detail-section" aria-labelledby="emergency-details-title">
+      {(emergency24x7 || emergencyCapabilities.length > 0 || emergencyScopeNote) && <section className="detail-section" aria-labelledby="emergency-details-title">
         <div className="detail-section-heading">
           <span className="detail-section-icon emergency-section-icon" aria-hidden="true">+</span>
           <div><p className="eyebrow">EMERGENCY CARE</p><h3 id="emergency-details-title">Emergency services</h3></div>
         </div>
         <div className="emergency-facts">
-        <div className="emergency-hours-row"><span>24/7 emergency department</span>{hasSourcedValue(enrichment?.emergency24x7) && enrichment.emergency24x7.value ? <strong className="fact-yes">Published as 24/7</strong> : <strong className="fact-confirm">Call to confirm</strong>}{hasSourcedValue(enrichment?.emergency24x7) && <SourceAndDate item={enrichment.emergency24x7} />}</div>
-        {hasSourcedValue(enrichment?.emergencyScopeNote) && <p className="emergency-scope-note">{enrichment.emergencyScopeNote.value} <SourceAndDate item={enrichment.emergencyScopeNote} /></p>}
-        {emergencyFields.filter((field) => field !== "24/7 emergency department").map((field) => {
-            const fieldValue = enrichment?.emergencyDetails?.[field];
-            const capability = hasSourcedValue(fieldValue) ? fieldValue : undefined;
-
-            return (
-              <div className="emergency-fact" key={field}>
-                <span>{field}</span>
-                {capability ? (
-                  <>
-                    <strong className={capability.value ? "fact-yes" : "fact-no"}>{capability.value ? "Available" : "Not available"}</strong>
-                    <SourceAndDate item={capability} />
-                  </>
-                ) : <strong className="fact-confirm">Call to confirm</strong>}
-              </div>
-            );
-          })}
+          {emergency24x7 && <div className="emergency-hours-row"><span>24/7 emergency department</span><strong className={emergency24x7.value ? "fact-yes" : "fact-no"}>{emergency24x7.value ? "Published as 24/7" : "Not published as 24/7"}</strong><SourceAndDate item={emergency24x7} /></div>}
+          {emergencyScopeNote && <p className="emergency-scope-note">{emergencyScopeNote.value} <SourceAndDate item={emergencyScopeNote} /></p>}
+          {emergencyCapabilities.map(({ field, capability }) => (
+            <div className="emergency-fact" key={field}>
+              <span>{field}</span>
+              <strong className={capability.value ? "fact-yes" : "fact-no"}>{capability.value ? "Available" : "Not offered"}</strong>
+              <SourceAndDate item={capability} />
+            </div>
+          ))}
         </div>
-      </section>
+      </section>}
 
-      <section className="detail-section" aria-labelledby="er-beds-title">
+      {erBeds && <section className="detail-section" aria-labelledby="er-beds-title">
         <div className="detail-section-heading">
           <span className="detail-section-icon beds-section-icon" aria-hidden="true">▤</span>
           <div><p className="eyebrow">BED INFORMATION</p><h3 id="er-beds-title">ER holding beds</h3></div>
         </div>
-        {erBeds ? (
-          <div className="bed-count">
-            <strong>{erBeds.value}</strong><span>ER holding beds</span>
-            <SourceAndDate item={erBeds} />
-          </div>
-        ) : <p className="section-empty">Information unavailable.</p>}
+        <div className="bed-count">
+          <strong>{erBeds.value}</strong><span>ER holding beds</span>
+          <SourceAndDate item={erBeds} />
+        </div>
         <p className="bed-separation-note">ER holding beds are separate from ICU and CCU beds. Reported counts are not live availability.</p>
-      </section>
+      </section>}
 
       <p className="provider-disclaimer">Call the hospital to confirm emergency services and current availability before travelling.</p>
-      <a className="report-error-link" href="mailto:replace-me@example.com?subject=ERMap%20error%20report">Report an error</a>
+      <a className="report-error-link" href="/about#contact">Contact details are being configured</a>
     </section>
   );
 }

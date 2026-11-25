@@ -62,18 +62,35 @@ function FacilityDirectoryList({ entries, selectedFacilityId, onSelect }: {
   return (
     <ol className="facility-list">
       {entries.map(({ facility, distance }) => {
-        const phone = facility.data.generalPhone;
+        const rawName = facility.data.hospitalName?.value;
+        const facilityName = typeof rawName === "string" && rawName.trim() && !/^(unavailable|not available)$/i.test(rawName.trim())
+          ? rawName.trim()
+          : undefined;
+        const rawLocality = facility.data.locality?.value;
+        const facilityLocality = typeof rawLocality === "string" && rawLocality.trim() && !/^(unavailable|not available)$/i.test(rawLocality.trim())
+          ? rawLocality.trim()
+          : undefined;
+        const phoneValue = facility.data.generalPhone?.value;
+        const phone = phoneValue?.trim() && !/^(unavailable|not available)$/i.test(phoneValue.trim())
+          ? facility.data.generalPhone
+          : undefined;
         const ownershipName = facility.data.ownership?.value;
         const ownershipLabel = ownershipName === "private" ? "PRIVATE" : ownershipName === "government" ? "GOVERNMENT" : ownershipName === "trust_charitable" ? "TRUST / CHARITABLE" : undefined;
         const selected = selectedFacilityId === facility.id;
+        const distanceLabel = distance !== undefined && Number.isFinite(distance) && distance >= 0 ? formatDistance(distance) : undefined;
+        const verifiedDate = facility.data.lastVerified;
+        const isDateValid = typeof verifiedDate === "string" && Number.isFinite(Date.parse(`${verifiedDate}T00:00:00Z`));
+        const reverificationDue = isDateValid && isReverificationDue(verifiedDate);
+        const hasPublishedTiming = facility.data.emergency24x7?.value === true || facility.data.emergency24x7?.value === false;
+        const hasMetadata = Boolean(ownershipLabel || hasPublishedTiming || reverificationDue);
         return (
           <li key={facility.id}>
             <div className={`facility-card-wrap ${selected ? "is-selected" : ""}`}>
-              <button type="button" className={`facility-card ${selected ? "is-selected" : ""}`} onClick={() => onSelect(facility.id)}>
+              <button type="button" className={`facility-card ${selected ? "is-selected" : ""}`} onClick={() => onSelect(facility.id)} aria-label={facilityName ? `Open ${facilityName} details` : "Open emergency department details"}>
                 <span className="facility-er-symbol">ER</span>
-                <span className="facility-copy"><strong>{facility.data.hospitalName.value}</strong><small>{facility.data.locality.value}{distance !== undefined ? ` · ${formatDistance(distance)}` : ""}</small><span className="facility-meta">{ownershipLabel && <em className={`ownership-text ownership-text-${ownershipName}`}>{ownershipLabel}</em>}<em>{facility.data.emergency24x7?.value ? "24/7 emergency published" : "Hours: call to confirm"}</em>{isReverificationDue(facility.data.lastVerified) && <em className="reverification-due">Re-verification due</em>}</span></span>
+                <span className="facility-copy">{facilityName && <strong>{facilityName}</strong>}{(facilityLocality || distanceLabel) && <small>{facilityLocality}{facilityLocality && distanceLabel ? ` · ${distanceLabel}` : distanceLabel}</small>}{hasMetadata && <span className="facility-meta">{ownershipLabel && <em className={`ownership-text ownership-text-${ownershipName}`}>{ownershipLabel}</em>}{facility.data.emergency24x7?.value === true && <em>24/7 emergency published</em>}{facility.data.emergency24x7?.value === false && <em>Not published as 24/7</em>}{reverificationDue && <em className="reverification-due">Re-verification due</em>}</span>}</span>
               </button>
-              <span className="facility-phone-area">{phone ? <><span className="facility-phone-number">{formatPhoneDisplay(phone.value)}</span><a className="facility-phone" href={`tel:${phoneHref(phone.value)}`} aria-label={`Call general hospital contact for ${facility.data.hospitalName.value}`}>Call hospital</a></> : <span className="facility-phone-unavailable">Phone unavailable</span>}</span>
+              {phone && <span className="facility-phone-area"><span className="facility-phone-number">{formatPhoneDisplay(phone.value)}</span><a className="facility-phone" href={`tel:${phoneHref(phone.value)}`} aria-label={`Call general hospital contact${facilityName ? ` for ${facilityName}` : ""}`}>Call hospital</a></span>}
             </div>
           </li>
         );
@@ -174,7 +191,7 @@ export default function Home() {
           <span><strong>ERMap</strong><small>NORTH BENGALURU</small></span>
         </a>
         <div className="topbar-note"><span className="live-dot" /> Emergency department discovery</div>
-        <a className="about-link" href="#trust-note">How ERMap works <span aria-hidden="true">&rarr;</span></a>
+        <a className="about-link" href="/about">About &amp; sources <span aria-hidden="true">&rarr;</span></a>
       </header>
 
       <section className="workspace" id="home" aria-label="Emergency care discovery">
@@ -259,7 +276,7 @@ export default function Home() {
         </aside>
       </section>
 
-      <footer className="page-footer"><span>ERMap <span className="footer-dot">&middot;</span> Emergency care, with clarity.</span><a className="report-error-link" href="mailto:replace-me@example.com?subject=ERMap%20error%20report">Report an error</a><span>In an emergency, call <strong>112</strong> or <strong>108</strong> first.</span></footer>
+      <footer className="page-footer"><span>ERMap <span className="footer-dot">&middot;</span> Emergency care, with clarity.</span><span><a href="/about">About &amp; sources</a> · <a href="/about#contact">Contact details being configured</a></span><span>In an emergency, call <strong>112</strong> or <strong>108</strong> first.</span><span className="developer-credit">Developed by <a href="https://x.com/KunalZ57" target="_blank" rel="noopener noreferrer">@KunalZ57</a></span></footer>
     </main>
   );
 }

@@ -40,6 +40,12 @@ Configure `NEXT_PUBLIC_MAP_STYLE_URL` in `.env.local` to enable the interactive 
 
 Place-name, locality, landmark and address search uses Photon (`photon.komoot.io`) with OpenStreetMap data, limited to the North Bengaluru pilot area. Searches are debounced, limited to six displayed results, and spaced by at least one second per browser session. Search results are map-provider results only and are not ERMap-verified facility records. Photon asks public demo users to keep request volume reasonable, may throttle or block extensive usage, and provides no availability guarantee. Search results display Photon and OpenStreetMap attribution. Review the [Photon demo server terms](https://github.com/komoot/photon#demo-server) before increasing traffic or using this for a wider audience.
 
+The [About & Sources page](/about) explains the verification approach, field-level source dates and Photon search data. The search request includes the query text and fixed North Bengaluru bias parameters. Public Photon search is a demo service; review its current terms and privacy information before production-scale use.
+
+## Public site metadata and contact
+
+The site metadata, canonical URL, robots rules, sitemap, favicon and social preview use `https://www.ermap.in`. Configure that domain and TLS at the hosting provider before publishing under the canonical URL. ERMap contact details are not configured; the site states this instead of advertising an unconfigured email address.
+
 ## Supabase setup
 
 1. Create a new project named `ermap-pilot` only after confirming region, plan and any possible charges.

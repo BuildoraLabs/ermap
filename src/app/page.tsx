@@ -227,9 +227,10 @@ export default function Home() {
 
         <aside ref={carePanelRef} className="care-panel" aria-label="Emergency actions and ER directory">
           <div className="panel-heading">
-            <p className="eyebrow">NORTH BENGALURU PILOT</p>
+            <p className="eyebrow pilot-label">North Bengaluru Pilot</p>
             <h1>Find emergency care.<br /><em>With clarity.</em></h1>
-            <p className="panel-intro">Browse emergency departments with published information. This directory does not rank clinical quality.</p>
+            <p className="pilot-description">ERMap is currently piloting emergency-care facility discovery in North Bengaluru. Coverage will expand as more facilities and emergency-care information are verified.</p>
+            <p className="panel-intro">This regional pilot is not a complete citywide hospital directory. ERMap does not rank clinical quality.</p>
           </div>
 
           <section className="emergency-card" aria-labelledby="emergency-heading">
@@ -272,11 +273,14 @@ export default function Home() {
             <p className="directory-data-note">Only facilities with published emergency-care evidence appear here. Map-provider hospital results remain unverified and are not ERMap facility records.</p>
           </section>
 
-          <div className="trust-note" id="trust-note"><span aria-hidden="true">\u2733</span><p><strong>Information, not medical advice.</strong><br />Call the hospital to confirm emergency services and current availability before travelling.</p></div>
+          <div className="trust-note" id="trust-note">
+            <p><strong>Information, not medical advice.</strong></p>
+            <p>Call the hospital to confirm emergency services and current availability before travelling.</p>
+          </div>
         </aside>
       </section>
 
-      <footer className="page-footer"><span>ERMap <span className="footer-dot">&middot;</span> Emergency care, with clarity.</span><span><a href="/about">About &amp; sources</a> · <a href="/about#contact">Contact details being configured</a></span><span>In an emergency, call <strong>112</strong> or <strong>108</strong> first.</span><span className="developer-credit">Developed by <a href="https://x.com/KunalZ57" target="_blank" rel="noopener noreferrer">@KunalZ57</a></span></footer>
+      <footer className="page-footer"><span>ERMap <span className="footer-dot">&middot;</span> Emergency care, with clarity.</span><span><a href="/about">About &amp; sources</a> · <a href="/about#contact">Contact details being configured</a></span><span>In an emergency, call <strong>112 or 108</strong> first.</span><span className="developer-credit">Developed by <a href="https://x.com/KunalZ57" target="_blank" rel="noopener noreferrer">@KunalZ57</a></span></footer>
     </main>
   );
 }

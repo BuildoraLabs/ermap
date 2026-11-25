@@ -30,8 +30,8 @@ button { font: inherit; }
 .live-dot, .result-dot { width: 7px; height: 7px; border-radius: 50%; background: #52a889; box-shadow: 0 0 0 3px #e2f1eb; }
 .about-link { color: #47554f; font-size: 12px; font-weight: 600; text-decoration: none; }
 .about-link span { color: var(--green); padding-left: 3px; }
-.workspace { display: grid; grid-template-columns: minmax(0, 55fr) minmax(420px, 45fr); gap: 22px; flex: 1; min-height: 0; padding: 22px 0 16px; }
-.map-column { display: flex; flex-direction: column; min-width: 0; min-height: 650px; }
+.workspace { display: grid; grid-template-columns: minmax(0, 46fr) minmax(480px, 54fr); gap: 22px; flex: 1; min-height: 0; padding: 18px 0 14px; }
+.map-column { display: flex; flex-direction: column; min-width: 0; min-height: min(610px, calc(100dvh - 150px)); }
 .map-toolbar { display: flex; gap: 10px; margin-bottom: 12px; }
 .search-field-wrap { position: relative; z-index: 10; min-width: 0; flex: 1; }
 .search-box { height: 48px; min-width: 0; flex: 1; display: flex; align-items: center; gap: 11px; border: 1px solid var(--line); border-radius: 13px; background: white; padding: 0 14px; box-shadow: 0 2px 6px #23392d08; }
@@ -72,7 +72,7 @@ button { font: inherit; }
 .icon-orthopaedic { color: #5f79a5; background: #eef2f9; }
 .icon-fall-injury { color: #aa7642; background: #fbf3e9; }
 .filter-disclaimer { margin: -5px 0 10px; color: #87928b; font-size: 9px; line-height: 1.45; }
-.map-frame { position: relative; flex: 1; min-height: 480px; overflow: hidden; border: 1px solid #dce4de; border-radius: 17px; background: #e8ede7; box-shadow: 0 5px 16px #19382a0a; }
+.map-frame { position: relative; flex: 1; min-height: 400px; overflow: hidden; border: 1px solid #dce4de; border-radius: 17px; background: #e8ede7; box-shadow: 0 5px 16px #19382a0a; }
 .map-canvas-wrap, .map-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .map-canvas { background: #e8ede7; }
 .er-map-marker { min-width: 38px; min-height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px 3px 3px; border: 2px solid #fff; border-radius: 24px; background: #237d61; color: #fff; cursor: pointer; box-shadow: 0 3px 12px #183c2e55; transition: transform .15s ease, box-shadow .15s ease; }
@@ -144,17 +144,17 @@ button { font: inherit; }
 .facility-card-wrap .facility-card:hover, .facility-card-wrap .facility-card.is-selected { border-color: transparent; background: transparent; }
 .facility-er-symbol { width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center; border-radius: 10px; background: #c72e3c; color: #fff; font-size: 11px; font-weight: 900; }
 .facility-copy { min-width: 0; display: flex; flex: 1; flex-direction: column; gap: 3px; }
-.facility-copy > strong { overflow: hidden; color: #2b4035; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-.facility-copy > small { color: #77857d; font-size: 9px; }
+.facility-copy > strong { overflow: hidden; color: #25382d; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.facility-copy > small { color: #64746a; font-size: 11px; line-height: 1.35; }
 .facility-meta { display: flex; flex-wrap: wrap; gap: 4px; }
-.facility-meta em { width: fit-content; padding: 3px 5px; border-radius: 5px; background: #eff6f1; color: #4d7760; font-size: 8px; font-style: normal; font-weight: 600; }
+.facility-meta em { width: fit-content; padding: 4px 6px; border-radius: 5px; background: #eff6f1; color: #426d55; font-size: 9px; font-style: normal; font-weight: 700; }
 .facility-meta .ownership-text { background: #eaf6f0; color: #246a4e; }
 .facility-meta .ownership-text-government { background: #edf4fb; color: #315f8c; }
 .facility-meta .ownership-text-trust_charitable { background: #f3eef9; color: #674a8c; }
 .facility-meta .reverification-due, .reverification-due { background: #fff1e5; color: #93521a; }
 .facility-phone-area { flex: 0 0 auto; display: flex; align-items: flex-end; flex-direction: column; gap: 4px; }
-.facility-phone-number { color: #64746a; font-size: 8px; font-weight: 600; white-space: nowrap; }
-.facility-phone { display: inline-grid; min-width: 48px; min-height: 33px; place-items: center; border-radius: 8px; background: #087b64; color: #fff; font-size: 10px; font-weight: 700; text-decoration: none; }
+.facility-phone-number { color: #354d40; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.facility-phone { display: inline-grid; min-width: 82px; min-height: 36px; place-items: center; border-radius: 8px; background: #087b64; color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; }
 .facility-phone-unavailable { color: #858f89; font-size: 8px; }
 .public-hospital-contact { display: flex; flex-direction: column; gap: 5px; margin-top: 9px; padding: 11px; border: 1px solid #dce6ed; border-radius: 10px; background: #f8fbfd; }
 .public-contact-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
@@ -175,9 +175,11 @@ button { font: inherit; }
 .service-unconfirmed-group > h3 { margin: 0; color: #5d4d30; font-size: 11px; font-weight: 800; }
 .service-unconfirmed-group > p { margin: 4px 0 7px; color: #7b715e; font-size: 9px; line-height: 1.45; }
 .eyebrow { margin: 0; color: #668477; font-size: 9px; font-weight: 800; letter-spacing: 1.3px; }
-.panel-heading h1 { margin: 9px 0 8px; color: #172922; font-size: 33px; line-height: 1.08; letter-spacing: -1.4px; }
+.panel-heading h1 { margin: 8px 0 10px; color: #172922; font-size: 34px; line-height: 1.08; letter-spacing: -1.4px; }
 .panel-heading h1 em { color: #32846a; font-style: normal; }
-.panel-intro { max-width: 310px; margin: 0; color: #76827c; font-size: 12px; line-height: 1.65; }
+.pilot-label { width: fit-content; margin: 0 0 9px; padding: 5px 9px; border: 1px solid #cfe3d6; border-radius: 20px; background: #eff7f1; color: #267254; font-size: 10px; letter-spacing: .25px; }
+.pilot-description { max-width: 540px; margin: 0 0 6px; color: #455b4c; font-size: 13px; line-height: 1.55; }
+.panel-intro { max-width: 520px; margin: 0; color: #6a786f; font-size: 12px; line-height: 1.5; }
 .emergency-card { margin-top: 19px; padding: 14px; border: 1px solid #f0dddd; border-radius: 13px; background: linear-gradient(135deg,#fffafa,#fff6f5); }
 .emergency-heading { display: flex; align-items: center; gap: 9px; }
 .emergency-symbol { width: 27px; height: 27px; display: grid; place-items: center; border: 1px solid #f0c5c5; border-radius: 8px; background: #fff; color: var(--red); font-size: 17px; font-weight: 800; }
@@ -202,9 +204,9 @@ button { font: inherit; }
 .detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .detail-title-wrap { min-width: 0; }
 .detail-provider-label { margin: 0; color: #668477; font-size: 8px; font-weight: 800; letter-spacing: 1px; }
-.detail-title-wrap h2 { margin: 6px 0 3px; color: #1b3026; font-size: 24px; line-height: 1.2; letter-spacing: -.5px; }
+.detail-title-wrap h2 { margin: 7px 0 4px; color: #172922; font-size: 28px; line-height: 1.18; letter-spacing: -.55px; }
 .map-provider-name { margin: 3px 0; color: #87928b; font-size: 10px; }
-.hospital-locality { margin: 0; color: #77857c; font-size: 12px; }
+.hospital-locality { margin: 0; color: #5e7165; font-size: 14px; }
 .er-status-badge { width: fit-content; max-width: 100%; margin-top: 9px; padding: 8px 10px; border: 1px solid #d6ebdf; border-radius: 9px; background: #eaf7ef; color: #206746; }
 .er-status-badge > strong { display: block; font-size: 11px; letter-spacing: .45px; }
 .er-status-badge .detail-source { margin-top: 3px; }
@@ -212,13 +214,13 @@ button { font: inherit; }
 .facility-distance { margin: 7px 0 0; color: #54816a; font-size: 10px; font-weight: 700; }
 .detail-close { width: 26px; height: 26px; flex: 0 0 26px; border: 1px solid #e7ece7; border-radius: 8px; background: #fbfcfb; color: #66746c; font-size: 19px; line-height: 1; cursor: pointer; }
 .ownership-badge { width: fit-content; max-width: 100%; min-height: 31px; display: inline-flex; align-items: center; margin-top: 9px; padding: 0 11px; border: 1px solid transparent; border-radius: 8px; }
-.ownership-badge > strong { overflow-wrap: anywhere; font-size: 12px; line-height: 1.2; letter-spacing: .55px; }
+.ownership-badge > strong { overflow-wrap: anywhere; font-size: 13px; line-height: 1.2; letter-spacing: .55px; }
 .ownership-government { border-color: #d5e4f4; background: #edf4fb; color: #315f8c; }
 .ownership-private { border-color: #cde8dc; background: #eaf6f0; color: #246a4e; }
 .ownership-trust_charitable { border-color: #e3d8f2; background: #f3eef9; color: #674a8c; }
-.detail-source { display: block; color: #89948d; font-size: 9px; line-height: 1.4; }
-.detail-source a { color: #4e7964; text-decoration: underline; text-underline-offset: 2px; }
-.official-address { margin: 11px 1px 0; color: #64736a; font-size: 11px; line-height: 1.5; }
+.detail-source { display: block; color: #64746a; font-size: 10px; line-height: 1.5; }
+.detail-source a { color: #356b50; text-decoration: underline; text-underline-offset: 2px; }
+.official-address { margin: 14px 1px 0; color: #465a4d; font-size: 14px; line-height: 1.6; }
 .official-address .detail-source { margin-top: 3px; }
 .last-verified { margin: 7px 1px 0; color: #748178; font-size: 10px; font-weight: 700; }
 .provider-location { display: flex; align-items: center; gap: 9px; margin-top: 13px; padding: 10px; border-radius: 9px; background: #f1f6f1; }
@@ -235,37 +237,37 @@ button { font: inherit; }
 .phone-section-icon { background: #eef4fa; color: #57799b; }
 .beds-section-icon { background: #f4f1fa; color: #756393; }
 .detail-section-heading .eyebrow { font-size: 7px; letter-spacing: .9px; }
-.detail-section-heading h3 { margin: 3px 0 0; color: #263a30; font-size: 14px; }
+.detail-section-heading h3 { margin: 3px 0 0; color: #20352a; font-size: 17px; }
 .section-empty { margin: 9px 0 0; padding: 10px 11px; border-radius: 8px; background: #f7f9f6; color: #748178; font-size: 11px; line-height: 1.45; }
-.emergency-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 15px; margin-top: 8px; }
-.emergency-fact { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 5px 8px; padding: 9px 1px; border-bottom: 1px solid #edf1ed; background: transparent; }
-.emergency-fact > span { color: #58675e; font-size: 11px; }
-.emergency-fact > strong { font-size: 10px; text-align: right; }
+.emergency-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; margin-top: 10px; }
+.emergency-fact { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 7px 10px; padding: 12px 1px; border-bottom: 1px solid #edf1ed; background: transparent; }
+.emergency-fact > span { color: #46594c; font-size: 13px; }
+.emergency-fact > strong { font-size: 12px; text-align: right; }
 .emergency-fact .fact-yes { color: #27714f; }
 .emergency-fact .fact-no { color: #66736b; }
 .emergency-fact .fact-confirm { color: #7b867f; font-size: 10px; font-weight: 600; }
 .emergency-fact .detail-source { grid-column: 1 / -1; }
-.contact-priority { display: grid; gap: 8px; margin-top: 13px; }
-.phone-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0; padding: 12px 13px; border: 1px solid #e4ece5; border-radius: 10px; background: #f7f9f6; }
+.contact-priority { display: grid; gap: 11px; margin-top: 16px; }
+.phone-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 0; padding: 15px; border: 1px solid #e4ece5; border-radius: 11px; background: #f7f9f6; }
 .phone-row.phone-emergency { border-color: #efd7d6; background: #fff8f7; }
 .emergency-number-unavailable { margin: 0 2px; color: #7c8980; font-size: 9px; }
-.phone-row > div { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
-.phone-row .phone-label { color: #58675e; font-size: 11px; }
-.hospital-phone-number { color: #275d46; font-size: 20px; font-weight: 800; text-decoration: none; letter-spacing: -.25px; }
-.phone-routing-note { color: #748178; font-size: 10px; }
+.phone-row > div { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
+.phone-row .phone-label { color: #42574a; font-size: 13px; font-weight: 700; }
+.hospital-phone-number { color: #1f6247; font-size: 26px; font-weight: 800; text-decoration: none; letter-spacing: -.35px; }
+.phone-routing-note { color: #5f7065; font-size: 11px; line-height: 1.5; }
 .phone-unavailable { margin: 0; }
-.call-hospital-action { flex: 0 0 auto; padding: 10px 13px; border-radius: 8px; background: #087b64; color: #fff; font-size: 12px; font-weight: 700; text-decoration: none; }
+.call-hospital-action { flex: 0 0 auto; min-width: 130px; padding: 12px 16px; border-radius: 9px; background: #087b64; color: #fff; font-size: 14px; font-weight: 700; text-align: center; text-decoration: none; }
 .call-hospital-action:hover { background: #066b57; }
 .bed-count { display: flex; align-items: baseline; gap: 9px; margin-top: 9px; padding: 12px 13px; border-radius: 9px; background: #f2f7f2; }
 .bed-count > strong { color: #2b5941; font-size: 32px; }
 .bed-count > span { color: #59685f; font-size: 12px; font-weight: 700; }
 .bed-count .detail-source { width: 100%; padding-left: 1px; }
 .bed-separation-note { margin: 7px 1px 0; color: #78857d; font-size: 10px; line-height: 1.45; }
-.provider-disclaimer { margin: 14px 0 0; padding-top: 11px; border-top: 1px solid #edf0ed; color: #6c7b71; font-size: 10px; line-height: 1.5; }
+.provider-disclaimer { margin: 16px 0 0; padding-top: 13px; border-top: 1px solid #edf0ed; color: #586a5f; font-size: 12px; line-height: 1.55; }
 .report-error-link { color: #28735c; font-size: 10px; font-weight: 700; text-underline-offset: 2px; }
 .hospital-detail > .report-error-link { display: inline-block; margin-top: 8px; }
-.emergency-hours-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 5px 8px; padding: 9px 1px; border-bottom: 1px solid #edf1ed; color: #58675e; font-size: 11px; }
-.emergency-hours-row > strong { font-size: 10px; text-align: right; }
+.emergency-hours-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 7px 10px; padding: 12px 1px; border-bottom: 1px solid #edf1ed; color: #46594c; font-size: 13px; }
+.emergency-hours-row > strong { font-size: 12px; text-align: right; }
 .emergency-hours-row .detail-source { grid-column: 1 / -1; }
 .empty-icon { width: 39px; height: 39px; display: grid; place-items: center; border: 1px solid #e3ebe4; border-radius: 12px; background: #f2f7f2; }
 .empty-icon svg { width: 22px; fill: none; stroke: #72947f; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
@@ -274,33 +276,32 @@ button { font: inherit; }
 .result-count { display: flex; align-items: center; gap: 7px; margin-top: 13px; color: #748078; font-size: 9px; font-weight: 600; }
 .result-dot { width: 6px; height: 6px; box-shadow: none; }
 .count-separator { color: #c2c9c4; }
-.trust-note { display: flex; gap: 9px; margin-top: 14px; padding: 10px 11px; border-radius: 9px; background: #eaf2ec; color: #698072; }
-.trust-note > span { color: #579476; font-size: 15px; }
-.trust-note p { margin: 0; font-size: 9px; line-height: 1.55; }
-.trust-note strong { color: #426451; font-size: 9px; }
+.trust-note { display: grid; gap: 3px; margin-top: 16px; padding: 13px 15px; border-radius: 9px; background: #eaf2ec; color: #4d6757; }
+.trust-note p { margin: 0; font-size: 12px; line-height: 1.55; }
+.trust-note strong { color: #315b43; font-size: 13px; }
 .page-footer { min-height: 26px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; color: #88938d; font-size: 9px; }
 .page-footer strong { color: #54675c; }
 .page-footer a { color: #28735c; font-weight: 700; text-underline-offset: 2px; }
-.page-footer .developer-credit { color: #9aa59e; font-size: 9px; }
+.page-footer .developer-credit { color: #9aa59e; font-size: 9px; white-space: nowrap; }
 .page-footer .developer-credit a, .about-footer a { color: #73877a; font-weight: 700; text-decoration: none; }
 .page-footer .developer-credit a:hover, .about-footer a:hover { color: #28735c; text-decoration: underline; }
 .footer-dot { padding: 0 3px; color: #b9c1bc; }
 
 @media (min-width: 1500px) {
   .app-shell { padding-right: max(38px, calc((100vw - 1660px)/2)); padding-left: max(38px, calc((100vw - 1660px)/2)); }
-  .workspace { grid-template-columns: minmax(0, 55fr) minmax(460px, 45fr); }
+  .workspace { grid-template-columns: minmax(0, 46fr) minmax(500px, 54fr); }
 }
 
 @media (max-width: 1050px) {
   .app-shell { padding-right: 22px; padding-left: 22px; }
-  .workspace { grid-template-columns: minmax(0, 55fr) minmax(420px, 45fr); gap: 16px; }
+  .workspace { grid-template-columns: minmax(0, 48fr) minmax(420px, 52fr); gap: 16px; }
   .filter-chip { padding: 0 8px; }
   .filter-row { gap: 6px; }
 }
 
 @media (max-width: 900px) {
   .workspace { grid-template-columns: minmax(0, 1fr); }
-  .map-column { min-height: 560px; }
+  .map-column { min-height: 500px; }
   .care-panel { max-height: none; overflow: visible; padding-right: 0; }
 }
 
@@ -312,7 +313,7 @@ button { font: inherit; }
   .topbar-note { display: none; }
   .about-link { font-size: 10px; }
   .workspace { display: flex; flex-direction: column; gap: 0; padding: 12px 0 9px; }
-  .map-column { min-height: 0; height: min(58dvh, 570px); flex: 0 0 min(58dvh, 570px); }
+  .map-column { min-height: 0; height: max(280px, min(40dvh, 360px)); flex: 0 0 max(280px, min(40dvh, 360px)); }
   .map-toolbar { gap: 7px; margin-bottom: 8px; }
   .search-box { height: 43px; border-radius: 11px; padding: 0 11px; }
   .search-box input { font-size: 12px; }
@@ -340,19 +341,22 @@ button { font: inherit; }
   .er-directory { order: 5; margin-top: 14px; }
   .trust-note { order: 6; }
   .panel-heading { display: grid; grid-template-columns: 1fr auto; align-items: end; column-gap: 10px; }
-  .panel-heading .eyebrow { grid-column: 1 / -1; font-size: 8px; }
-  .panel-heading h1 { margin: 5px 0 0; font-size: 22px; line-height: 1.05; letter-spacing: -.8px; }
+  .panel-heading .eyebrow { grid-column: 1 / -1; font-size: 10px; }
+  .panel-heading h1 { margin: 5px 0 8px; font-size: 25px; line-height: 1.08; letter-spacing: -.8px; }
   .panel-heading h1 br { display: none; }
-  .panel-intro { max-width: 175px; font-size: 9px; line-height: 1.45; }
+  .pilot-label { margin-bottom: 6px; }
+  .pilot-description, .panel-intro { grid-column: 1 / -1; }
+  .pilot-description { margin-bottom: 5px; font-size: 12px; line-height: 1.45; }
+  .panel-intro { max-width: none; font-size: 11px; line-height: 1.45; }
   .emergency-card { margin-top: 11px; padding: 10px; }
   .emergency-heading { gap: 7px; }
   .emergency-symbol { width: 23px; height: 23px; border-radius: 7px; font-size: 14px; }
-  .emergency-heading .eyebrow { font-size: 7px; }
-  .emergency-heading h2 { font-size: 10px; }
+  .emergency-heading .eyebrow { font-size: 8px; }
+  .emergency-heading h2 { font-size: 13px; }
   .call-actions { gap: 6px; margin-top: 8px; }
   .call-actions a { min-height: 43px; padding: 6px 9px; }
-  .call-actions a span { font-size: 15px; }
-  .call-actions a small { margin-top: 1px; font-size: 8px; }
+  .call-actions a span { font-size: 18px; }
+  .call-actions a small { margin-top: 1px; font-size: 10px; }
   .call-actions a b { top: 6px; right: 8px; }
   .emergency-note { margin-top: 6px; font-size: 8px; }
   .ownership-section { margin-top: 12px; }
@@ -362,22 +366,22 @@ button { font: inherit; }
   .ownership-options button { min-height: 26px; padding: 0 8px; font-size: 8px; }
   .results-empty { min-height: 0; flex: 0 0 auto; display: grid; grid-template-columns: 32px 1fr; align-items: center; column-gap: 9px; margin-top: 11px; padding: 9px; text-align: left; }
   .hospital-detail { margin-top: 11px; padding: 11px; }
-  .detail-title-wrap h2 { font-size: 22px; }
+  .detail-title-wrap h2 { font-size: 25px; }
   .ownership-badge { min-height: 30px; padding: 0 10px; }
   .ownership-badge > strong { font-size: 11px; }
-  .detail-source { font-size: 8px; }
-  .official-address { font-size: 11px; }
+  .detail-source { font-size: 10px; }
+  .official-address { font-size: 13px; }
   .last-verified { font-size: 9px; }
   .detail-section { margin-top: 12px; padding-top: 10px; }
-  .detail-section-heading h3 { font-size: 14px; }
+  .detail-section-heading h3 { font-size: 16px; }
   .emergency-facts { column-gap: 12px; }
   .emergency-fact { padding: 9px 1px; }
-  .emergency-fact > span { font-size: 11px; }
-  .emergency-fact > strong, .emergency-fact .fact-confirm { font-size: 10px; }
+  .emergency-fact > span { font-size: 13px; }
+  .emergency-fact > strong, .emergency-fact .fact-confirm { font-size: 12px; }
   .phone-row { flex-wrap: wrap; padding: 12px; }
   .phone-row > div { flex: 1 1 150px; }
-  .hospital-phone-number { font-size: 21px; }
-  .phone-row .call-hospital-action { flex: 1 1 100%; text-align: center; }
+  .hospital-phone-number { font-size: 25px; }
+  .phone-row .call-hospital-action { flex: 1 1 100%; min-height: 44px; text-align: center; }
   .bed-count { flex-wrap: wrap; }
   .bed-count > strong { font-size: 30px; }
   .bed-count .detail-source { flex-basis: 100%; }
@@ -388,7 +392,9 @@ button { font: inherit; }
   .er-map-marker .er-map-marker-name { max-width: min(40vw, 150px); font-size: 11px; }
   .directory-heading-row h2 { font-size: 15px; }
   .facility-card { padding: 9px; gap: 7px; }
-  .facility-copy > strong { font-size: 10px; }
+  .facility-copy > strong { font-size: 12px; }
+  .facility-copy > small { font-size: 10px; }
+  .facility-phone-number { font-size: 9px; }
   .facility-phone { min-width: 42px; min-height: 31px; }
   .directions-action { padding: 6px; }
   .empty-icon { width: 32px; height: 32px; grid-row: 1 / 3; border-radius: 9px; }
@@ -396,10 +402,13 @@ button { font: inherit; }
   .results-empty h2 { margin: 0 0 3px; font-size: 9px; }
   .results-empty > p { max-width: none; font-size: 8px; line-height: 1.4; }
   .result-count { grid-column: 2; gap: 6px; margin-top: 6px; font-size: 8px; }
-  .trust-note { margin-top: 9px; padding: 7px 9px; }
-  .trust-note > span { font-size: 12px; }
-  .trust-note p, .trust-note strong { font-size: 8px; }
-  .page-footer { align-items: flex-start; padding: 2px 0 0; font-size: 8px; }
+  .trust-note { margin-top: 9px; }
+  .trust-note { padding: 11px 12px; }
+  .trust-note p { font-size: 11px; }
+  .trust-note strong { font-size: 12px; }
+  .page-footer { align-items: flex-start; padding: 2px 0 0; font-size: 9px; }
+  .page-footer > span { max-width: 100%; }
+  .page-footer .developer-credit { flex-basis: 100%; margin-left: auto; text-align: right; }
 }
 
 @media (max-width: 390px) {
